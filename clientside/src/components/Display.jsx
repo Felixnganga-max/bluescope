@@ -3,144 +3,193 @@ import images from "../assets/assets";
 
 const Display = () => {
   return (
-    <div className="mt-[-40px] z-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
-      <div className="bg-blue-100 rounded-xl shadow-lg flex flex-col items-start py-2 justify-between text-center font-semibold">
-        <p className="text-gray-800 text-left text-lg md:text-lg font-medium leading-snug py-2">
-          Tell them how much you care!
+    <div className="z-10 container mx-auto p-2">
+      <div className="flex flex-col items-start text-center mb-2">
+        <h1 className="text-lg md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-700 to-blue-400 bg-clip-text text-transparent">
+          Brand Expression Through Quality Designs & Print
+        </h1>
+        <p className="text-base md:text-lg bg-gradient-to-r from-blue-700 to-blue-400 bg-clip-text mt-3 font-medium tracking-wide">
+          From concept to creation
         </p>
-        <video
-          src={images.bags}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-50 md:h-60 object-cover rounded-md shadow-md"
-        />
       </div>
-      <div className="bg-pink-100 rounded-xl shadow-lg flex-col col-span-1 md:col-span-2 lg:col-span-2 row-span-1 flex items-start justify-between text-center font-semibold">
-        <p className="text-gray-800 text-left text-lg md:text-lg font-medium leading-snug py-2">
-          Branded pens
-          <br />
-          <span className="text-sm">Promote with every written word!</span>
-        </p>
-        <video
-          src={images.printingPens}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-50 md:h-60 object-cover rounded-sm shadow-md"
-        />
-      </div>
-      <div className="bg-purple-100 rounded-sm shadow-lg flex-col flex items-start justify-between text-center font-semibold">
-        <p className="text-gray-800 text-left text-lg md:text-lg font-medium leading-snug py-2">
-          Large format printing
-        </p>
-        <video
-          src={images.bannerMachine}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-50 md:h-60 object-cover rounded-md shadow-md"
-        />
-      </div>
-      <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-md shadow-lg col-span-1 row-span-1 flex flex-col items-center justify-center text-center gap-4 hover:shadow-xl transition-shadow duration-300">
-        <p className="text-gray-800 text-left text-lg md:text-lg font-medium leading-snug py-2">
-          Custom printed, notebooks & more...
-          <br />
-          <span className="text-sm">
-            Custom Covers, Branded Pages, Lasting Impressions!
-          </span>
-        </p>
-        <video
-          src={images.printingBooks}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-50 md:h-60 object-cover rounded-md shadow-md"
-        />
-      </div>
-      <div className="bg-orange-100 p-2 flex-col rounded-xl shadow-lg flex items-start justify-between text-center font-semibold">
-        <p className="text-gray-800 text-left text-lg md:text-lg font-medium leading-snug py-2">
-          Vinyl Plotter Cutting
-        </p>
-        <video
-          src={images.plotter}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-50 md:h-60 object-cover rounded-md shadow-md"
-        />
-      </div>
-      <div className="bg-green-100 p-2 rounded-xl shadow-lg flex items-start flex-col justify-between text-center font-semibold">
-        <p className="text-gray-800 text-left text-lg md:text-lg font-medium leading-snug py-2">
-          Custom printed books, notebooks & more...
-        </p>
-        <video
-          src={images.mugPrint}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-50 md:h-60 object-cover rounded-md shadow-md"
-        />
-      </div>
-      <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col gap-4">
-        <p className="text-gray-800 text-lg md:text-lg font-medium leading-snug text-left">
-          You definitely want to have this!
-        </p>
-        <div className="overflow-hidden rounded-lg w-full">
-          <img
-            src={images.mugs}
-            alt="Custom printed mugs"
-            className="w-full h-48 md:h-56 object-cover hover:scale-105 transition-transform duration-500 ease-out"
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-min">
+        {/* Single Large Item */}
+        <div className="col-span-2 bg-zinc-900 rounded-xs overflow-hidden h-60 relative group">
+          <video
+            src={images.printingPens}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent">
+            <p className="absolute bottom-3 left-3 text-white font-medium">
+              <span className="text-xl">Branded pens</span>
+              <span className="block text-sm text-zinc-300 mt-0.5">
+                Promote with every written word!
+              </span>
+            </p>
+          </div>
         </div>
-      </div>
-      <div className="bg-pink-200 p-2 rounded-xl shadow-lg col-span-1 row-span-2 flex items-start justify-between flex-col text-center font-semibold">
-        <p className="text-gray-800 text-left text-lg md:text-lg font-medium leading-snug py-2">
-          Pillowcases
-        </p>
-        <video
-          src={images.pillowCase}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-50 md:h-60 object-cover rounded-md shadow-md"
-        />
-      </div>
-      <div className="bg-blue-200 p-2 rounded-xl shadow-lg flex flex-col items-start justify-between text-center row-span-3 font-semibold">
-        <p className="text-gray-800 text-left text-lg md:text-lg font-medium leading-snug py-2">
-          Custom printed mugs
-        </p>
-        <video
-          src={images.bottle}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-50 md:h-80 object-cover rounded-md shadow-md"
-        />
-      </div>
-      <div className="bg-yellow-200 rounded-xl shadow-lg flex flex-col items-center justify-center text-center font-semibold">
-        <p className="text-gray-800 text-left text-lg md:text-lg font-medium leading-snug py-2">
-          Branded keyholders <br />
-          <span className="text-xs">
-            Keep keys safe with our custom printed keychains
-          </span>
-        </p>
-        <video
-          src={images.keyholders}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-50 md:h-60 object-cover shadow-md"
-        />
+
+        {/* Regular Item */}
+        <div className="bg-zinc-900 rounded-xs overflow-hidden h-60 relative group">
+          <video
+            src={images.bags}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
+            <p className="absolute bottom-3 left-3 text-white">
+              <span className="text-base font-medium">
+                Tell them how much you care!
+              </span>
+              <span className="block text-xs text-zinc-300">
+                Premium promotional materials
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {/* Regular Item */}
+        <div className="bg-zinc-900 rounded-xs overflow-hidden h-60 relative group">
+          <video
+            src={images.bannerMachine}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
+            <p className="absolute bottom-3 left-3 text-white font-medium">
+              Large format printing
+            </p>
+          </div>
+        </div>
+
+        {/* Regular Item */}
+        <div className="bg-zinc-900 rounded-md overflow-hidden h-60 relative group">
+          <video
+            src={images.plotter}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
+            <p className="absolute bottom-3 left-3 text-white font-medium">
+              Vinyl Plotter Cutting
+              <span className="block text-xs text-zinc-300">
+                Precision cuts for perfect results
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {/* Wide Item */}
+        <div className="col-span-2 bg-zinc-900 rounded-md overflow-hidden h-80 relative group">
+          <video
+            src={images.printingBooks}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
+            <p className="absolute bottom-3 left-3 text-white">
+              <span className="text-base font-medium">
+                Custom printed books
+              </span>
+              <span className="block text-xs text-zinc-300">
+                Lasting Impressions!
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {/* Regular Item */}
+        <div className="bg-zinc-900 rounded-xs overflow-hidden h-60 relative group">
+          <video
+            src={images.mugPrint}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
+            <p className="absolute bottom-3 left-3 text-white font-medium">
+              Custom mugs
+            </p>
+          </div>
+        </div>
+
+        {/* Regular Item */}
+        <div className="bg-zinc-900 rounded-xs overflow-hidden h-88 relative group -mt-20">
+          <video
+            src={images.bottle}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
+            <p className="absolute bottom-3 left-3 text-white font-medium">
+              Premium Bottles
+              <span className="block text-xs text-zinc-300">
+                Hydrate in style
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {/* Wide Item */}
+        <div className="col-span-2 bg-zinc-900 rounded-xs overflow-hidden h-68 relative group">
+          <video
+            src={images.pillowCase}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
+            <p className="absolute bottom-3 left-3 text-white">
+              <span className="text-base font-medium">Premium Pillowcases</span>
+              <span className="block text-xs text-zinc-300">
+                Rest in comfort
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {/* Regular Item */}
+        <div className="bg-zinc-900 rounded-md overflow-hidden -mt-20 h-88 relative group">
+          <video
+            src={images.keyholders}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
+            <p className="absolute bottom-3 left-3 text-white">
+              <span className="text-base font-medium">Branded keyholders</span>
+              <span className="block text-xs text-zinc-300">
+                Keep keys safe with style
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

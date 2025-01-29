@@ -6,10 +6,9 @@ const Hero = () => {
   const [progress, setProgress] = useState(0);
 
   const slides = [
-    { id: 1, url: images.slider2, title: "Slider 2" },
-    { id: 2, url: images.slider1, title: "Slider 1" },
-    { id: 2, url: images.Slider4, title: "Slider 4" },
-    { id: 2, url: images.Slider3, title: "Slider 3" },
+    { id: 1, url: images.pens, title: "Slider 2" },
+    { id: 2, url: images.pen, title: "Pens" },
+    { id: 3, url: images.pens2, title: "Pens" },
   ];
 
   useEffect(() => {
@@ -19,7 +18,7 @@ const Hero = () => {
           setCurrentSlide((current) => (current + 1) % slides.length);
           return 0;
         }
-        return prev + 1;
+        return prev + 2;
       });
     }, 60);
 
@@ -32,9 +31,9 @@ const Hero = () => {
   };
 
   return (
-    <div className="relative w-full flex justify-center items-center py-2 md:py-8">
-      <div className="relative w-[99%] h-[60vh] mt-[-25px] overflow-hidden">
-        {/* Navigation Dots Container */}
+    <div className="relative w-full flex justify-center items-center mt-1 py-2 md:py-8">
+      <div className="relative w-full md:w-[99%] h-[60vh] mt-[-25px] overflow-hidden">
+        {/* Navigation Dots */}
         <div className="absolute top-2 md:top-4 left-1/2 transform -translate-x-1/2 flex space-x-2 md:space-x-3 z-10">
           {slides.map((_, index) => (
             <button
@@ -50,10 +49,8 @@ const Hero = () => {
             >
               {currentSlide === index && (
                 <div
-                  className="absolute left-0 top-0 h-full bg-white transition-all duration-200"
-                  style={{
-                    width: `${progress}%`,
-                  }}
+                  className="absolute left-0 top-0 h-full transition-all duration-200"
+                  style={{ width: `${progress}%` }}
                 />
               )}
               <div
@@ -67,26 +64,40 @@ const Hero = () => {
 
         {/* Slides */}
         <div
-          className="flex transition-transform duration-700 ease-out h-full"
+          className="flex transition-transform duration-700 ease-in-out h-full"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
         >
           {slides.map((slide) => (
-            <div key={slide.id} className="min-w-full h-full">
-              <img
-                src={slide.url}
-                alt={slide.title}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  console.error(`Error loading image: ${slide.title}`);
-                  e.target.src =
-                    "https://via.placeholder.com/800x450?text=Image+Not+Found";
-                }}
-              />
+            <div key={slide.id} className="flex min-w-full h-full">
+              <div className="w-1/2 flex items-center justify-center p-4">
+                <div>
+                  <h2 className="text-xl font-bold mb-4">Sample Text</h2>
+                  <p>
+                    This is some dummy text that will appear on the right side
+                    of the image. You can replace this with actual content
+                    related to your slider.
+                  </p>
+                  <button className="bg-orange-400 p-4 rounded-lg mt-8">
+                    Explore Our Services
+                  </button>
+                </div>
+              </div>
+              <div className="w-1/2 h-full">
+                <img
+                  src={slide.url}
+                  alt={slide.title}
+                  className="w-[80%] h-[95%] object-cover"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://via.placeholder.com/800x450?text=Image+Not+Found";
+                  }}
+                />
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Previous/Next Buttons */}
+        {/* Navigation Buttons */}
         <button
           onClick={() =>
             goToSlide((currentSlide - 1 + slides.length) % slides.length)
