@@ -3,7 +3,7 @@ import images from "../assets/assets";
 
 const Display = () => {
   return (
-    <div className="z-10 container mx-auto p-2">
+    <div className="z-10 container mx-auto p-2 mb-10">
       <div className="flex flex-col items-start text-center mb-2">
         <h1 className="text-lg md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-700 to-blue-400 bg-clip-text text-transparent">
           Brand Expression Through Quality Designs & Print

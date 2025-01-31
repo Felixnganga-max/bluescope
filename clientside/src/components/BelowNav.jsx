@@ -125,7 +125,7 @@ const BelowNav = () => {
   }, []);
 
   return (
-    <div className="bg-[#4335A7] py-1 sticky top-0 z-50">
+    <div className="sticky top-16 bg-[#4335A7] py-1 z-50">
       <div className="container mx-auto px-4">
         {/* Mobile Menu Button */}
         <div className="md:hidden flex justify-between items-center">
