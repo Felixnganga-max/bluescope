@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import Display from "../components/Display";
 import BelowNav from "../components/BelowNav";
-import ProductDisplay from "../components/productDisplay";
+import ProductDisplay from "../components/ProductDisplay";
 
 const Home = () => {
   return (
