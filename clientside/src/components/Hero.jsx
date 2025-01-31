@@ -44,7 +44,7 @@ const Hero = () => {
   }, [slides.length]);
 
   return (
-    <div className="relative w-full h-[65vh] md:h-[90vh] flex justify-center items-center text-white overflow-hidden">
+    <div className="relative w-full h-[66vh] md:h-[90vh] flex justify-center items-center text-white overflow-hidden">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-in-out"
