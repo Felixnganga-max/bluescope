@@ -4,6 +4,8 @@ import Hero from "../components/Hero";
 import Display from "../components/Display";
 import BelowNav from "../components/BelowNav";
 import ProductDisplay from "../components/ProductDisplay";
+import AddProducts from "../components/AddProducts";
+import ProductList from "../components/ProductList";
 
 const Home = () => {
   return (
@@ -13,8 +15,7 @@ const Home = () => {
       <Hero />
       <Display />
       <ProductDisplay />
-      <ProductDisplay />
-      <ProductDisplay />
+      <ProductList />
     </div>
   );
 };

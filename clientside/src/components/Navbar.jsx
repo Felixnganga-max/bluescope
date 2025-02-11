@@ -2,6 +2,7 @@ import React from "react";
 import images from "../assets/assets";
 
 const Navbar = () => {
+  const handleClick = () => {};
   return (
     <nav className="bg-white h-16 sticky top-0 z-50 p-4 flex items-center justify-between shadow-md">
       {/* Logo */}
@@ -28,6 +29,7 @@ const Navbar = () => {
           placeholder="Find everything at Bluescope online & in-store"
           className="h-10 md:h-12 w-full px-4 pr-10 rounded-full bg-blue-200 text-sm focus:outline-none placeholder-gray-700"
         />
+        <p onClick={handleClick}>Add new</p>
         <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-400 text-white p-2 rounded-full hover:bg-blue-500 transition">
           <svg
             xmlns="http://www.w3.org/2000/svg"
