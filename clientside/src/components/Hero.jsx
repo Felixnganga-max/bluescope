@@ -5,11 +5,34 @@ export default function Hero() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for dropdown visibility
 
   // Animation effect on component mount
   useEffect(() => {
     setIsLoaded(true);
   }, []);
+
+  // Function to handle WhatsApp click
+  const handleWhatsAppClick = () => {
+    const phoneNumber = "1234567890"; // Replace with your WhatsApp number
+    const message = "Hello, I would like to get a quick quote."; // Replace with your message
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+      message
+    )}`;
+    window.open(url, "_blank");
+  };
+
+  // Function to handle Call click
+  const handleCallClick = () => {
+    const phoneNumber = "1234567890"; // Replace with your phone number
+    window.location.href = `tel:${phoneNumber}`;
+  };
+
+  // Function to handle Get to Know Us click
+  const handleGetToKnowUsClick = () => {
+    // You can attach your chatbot functionality here
+    alert("Chatbot will be attached here.");
+  };
 
   // Print shop categories data structure
   const categories = [
@@ -405,7 +428,10 @@ export default function Hero() {
 
       {/* Optional: Floating Call-to-Action Button (visible on scroll) */}
       <div className="fixed bottom-6 right-6 z-50 hidden md:block">
-        <button className="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 flex items-center justify-center">
+        <button
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          className="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 flex items-center justify-center"
+        >
           <span className="sr-only">Quick Quote</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -425,6 +451,32 @@ export default function Hero() {
         <span className="absolute -top-10 right-0 bg-white text-purple-700 px-3 py-1 rounded-lg shadow-md text-sm font-medium whitespace-nowrap">
           Get Quick Quote
         </span>
+
+        {/* Dropdown Menu */}
+        {isDropdownOpen && (
+          <div className="absolute bottom-16 right-0 bg-white rounded-lg shadow-lg w-48 z-50">
+            <ul className="py-2">
+              <li
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={handleWhatsAppClick}
+              >
+                Chat on WhatsApp
+              </li>
+              <li
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={handleCallClick}
+              >
+                Call Us
+              </li>
+              <li
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={handleGetToKnowUsClick}
+              >
+                Get to Know Us
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

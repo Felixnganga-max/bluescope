@@ -7,6 +7,7 @@ import ProductDisplay from "../components/ProductDisplay";
 import AddProducts from "../components/AddProducts";
 import ProductList from "../components/ProductList";
 import BelowHero from "../components/BelowHero";
+import DisplayA from "../components/DisplayA";
 
 const Home = () => {
   return (
@@ -15,6 +16,7 @@ const Home = () => {
       {/* <BelowNav /> */}
       <Hero />
       <BelowHero />
+      <DisplayA />
       <Display />
       <ProductDisplay />
       <ProductList />
