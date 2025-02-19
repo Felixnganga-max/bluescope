@@ -1,4 +1,5 @@
 import logo from "../assets/images/blsp.jpg";
+import banner from "../assets/images/banner.png";
 import printingBooks from "../assets/images/printingVideo.mp4";
 import printingPens from "../assets/images/penPrinting.mp4";
 import keyholders from "../assets/images/keyholders.mp4";
@@ -17,6 +18,7 @@ import pillow from "../assets/images/pillow.png";
 import largePaints from "../assets/images/largePaints.jpeg";
 import displaypens from "../assets/images/displaypens.png";
 import jute from "../assets/images/jute.png";
+import carier from "../assets/images/carier.jpeg";
 
 export const printItems = [
   {
@@ -93,14 +95,17 @@ const images = {
   printingBooks,
   printingPens,
   keyholders,
+  notebook,
   bags,
   bannerMachine,
   plotter,
+  banner,
   pillowCase,
   bottle,
   mugPrint,
   pen,
   pens2,
+  carier,
 };
 
 export default images;

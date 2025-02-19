@@ -34,4 +34,5 @@ const uploadToCloudinary = async (filePath) => {
   }
 };
 
+// Export everything in CommonJS syntax
 module.exports = { upload, uploadToCloudinary, cloudinary };
