@@ -263,12 +263,16 @@ export default function Hero() {
               Professional Quality
             </div>
             <h2 className="text-white text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg">
-              Premium Print <br />
-              Solutions
+              Does Your Brand Need More <br />
+              <span className="text-blue-500">Visibility?</span>
             </h2>
-            <p className="text-white text-base md:text-lg mb-6 max-w-md drop-shadow-md leading-relaxed">
-              Quality printing services for all your business and personal
-              needs. Trusted by over 10,000+ businesses.
+            <p className="text-white text-xl uppercase font-bolder outline-1 rounded-3xl p-5 md:text-2xl mb-6 max-w-md drop-shadow-md leading-relaxed">
+              We <span className="text-blue-500">Design</span>
+              <br />
+              We <span className="text-blue-500">Print</span>
+              <br />
+              We <span className="text-blue-500">Brand</span>
+              <br />
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button className="bg-purple-600 text-white py-3 px-8 rounded-lg hover:bg-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">

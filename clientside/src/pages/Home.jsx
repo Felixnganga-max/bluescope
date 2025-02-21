@@ -8,18 +8,20 @@ import AddProducts from "../components/AddProducts";
 import ProductList from "../components/ProductList";
 import BelowHero from "../components/BelowHero";
 import DisplayA from "../components/DisplayA";
+import BusinessShowcase from "../components/BusinessShowcase";
+import Footer from "../components/Footer";
 
 const Home = () => {
   return (
     <div>
-      <Navbar />
       {/* <BelowNav /> */}
       <Hero />
       <BelowHero />
       <DisplayA />
-      <Display />
-      <ProductDisplay />
       <ProductList />
+      <BusinessShowcase />
+
+      {/* <ProductDisplay /> */}
     </div>
   );
 };

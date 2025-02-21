@@ -1,13 +1,26 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MoreHorizontal } from "lucide-react";
-import { printItems } from "../assets/assets";
+import axios from "axios"; // ✅ Import Axios for API calls
 
 const DisplayA = () => {
   const [randomItems, setRandomItems] = useState([]);
+  const navigate = useNavigate(); // ✅ Initialize navigation
 
   useEffect(() => {
-    const shuffledItems = [...printItems].sort(() => Math.random() - 0.5);
-    setRandomItems(shuffledItems.slice(0, 10)); // Limit to 10 products
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/bluescope/products"
+        );
+        const shuffledItems = response.data.sort(() => Math.random() - 0.5);
+        setRandomItems(shuffledItems.slice(0, 10)); // ✅ Limit to 10 products
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   return (
@@ -24,15 +37,16 @@ const DisplayA = () => {
 
       {/* Product Grid */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-        {randomItems.map((item, index) => (
+        {randomItems.map((item) => (
           <div
-            key={index}
+            key={item._id}
             className="relative rounded-lg shadow-md overflow-hidden group hover:shadow-xl transition-all duration-300 cursor-pointer bg-white"
+            onClick={() => navigate(`/product/${item._id}`)} // ✅ Navigate to details page
           >
             {/* Image with Gradient Overlay */}
             <div className="relative w-full h-40 overflow-hidden">
               <img
-                src={item.image}
+                src={item.images[0]}
                 alt={item.name}
                 className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
               />

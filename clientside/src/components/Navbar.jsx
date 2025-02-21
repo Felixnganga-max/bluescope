@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import images from "../assets/assets";
+import images from "../assets/assets"; // Ensure this path is correct
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isSearchVisible, setSearchVisible] = useState(false);
   const [isAccountDropdownVisible, setAccountDropdownVisible] = useState(false);
+  const navigate = useNavigate();
 
   const toggleSearch = () => {
     setSearchVisible(!isSearchVisible);
@@ -24,7 +26,10 @@ const Navbar = () => {
           src={images.logo}
           alt="Logo"
         />
-        <div className="text-black">
+        <div
+          className="text-black cursor-pointer"
+          onClick={() => navigate("/")}
+        >
           <p className="font-bold text-lg md:text-3xl tracking-wider text-blue-700">
             BLUESCOPE
           </p>
@@ -39,10 +44,16 @@ const Navbar = () => {
         <a href="#about" className="text-gray-800 hover:text-blue-700">
           About Us
         </a>
-        <a href="#services" className="text-gray-800 hover:text-blue-700">
+        <a
+          onClick={() => navigate("/services")}
+          className="text-gray-800 hover:text-blue-700"
+        >
           Services
         </a>
-        <a href="#catalogue" className="text-gray-800 hover:text-blue-700">
+        <a
+          onClick={() => navigate("/catalogue")}
+          className="text-gray-800 hover:text-blue-700 cursor-pointer"
+        >
           Catalogue
         </a>
         <a href="#contact" className="text-gray-800 hover:text-blue-700">

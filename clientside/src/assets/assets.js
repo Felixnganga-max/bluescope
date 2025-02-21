@@ -19,6 +19,10 @@ import largePaints from "../assets/images/largePaints.jpeg";
 import displaypens from "../assets/images/displaypens.png";
 import jute from "../assets/images/jute.png";
 import carier from "../assets/images/carier.jpeg";
+import showcase from "../assets/images/showcase.jpeg";
+import billboard from "../assets/images/billboard.jpeg";
+import promo from "../assets/images/promo.jpeg";
+import sign from "../assets/images/sign.jpeg";
 
 export const printItems = [
   {
@@ -106,6 +110,10 @@ const images = {
   pen,
   pens2,
   carier,
+  sign,
+  showcase,
+  billboard,
+  promo,
 };
 
 export default images;
