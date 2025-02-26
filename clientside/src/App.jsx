@@ -15,12 +15,16 @@ import ProductDetails from "./pages/ProductDetails";
 import Catalogue from "./pages/Catalogue";
 import Services from "./pages/Services";
 import AboutUs from "./pages/AboutUs";
+import AuthController from "./components/AuthController"; // ✅ Import AuthController
 
 function App() {
   return (
     <div>
       {/* ✅ Navbar always stays at the top */}
       <Navbar />
+
+      {/* ✅ Auth Controller to handle login/signup/verify popups */}
+      <AuthController />
 
       <Routes>
         {/* Existing Routes */}

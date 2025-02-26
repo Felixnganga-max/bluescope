@@ -120,7 +120,7 @@ export default function Hero() {
 
   return (
     <div
-      className={`flex flex-col lg:flex-row gap-6 p-6 bg-gradient-to-br from-gray-50 to-gray-200 min-h-screen transition-opacity duration-1000 ${
+      className={`flex flex-col mt-18 lg:flex-row gap-6 p-6 bg-gradient-to-br from-gray-50 to-gray-200 min-h-screen transition-opacity duration-1000 ${
         isLoaded ? "opacity-100" : "opacity-0"
       }`}
     >

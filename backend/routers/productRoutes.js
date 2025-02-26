@@ -8,12 +8,12 @@ const {
   deleteProduct,
 } = require("../controllers/productController");
 
-const router = express.Router();
+const AuthRouter = express.Router();
 
-router.get("/", getAllProducts);
-router.get("/:id", getProductById);
-router.post("/create-new", upload.array("images", 5), createProduct); // Supports multiple images
-router.put("/:id", upload.array("images", 5), updateProduct); // Allows adding new images
-router.delete("/:id", deleteProduct);
+AuthRouter.get("/", getAllProducts);
+AuthRouter.get("/:id", getProductById);
+AuthRouter.post("/create-new", upload.array("images", 5), createProduct); // Supports multiple images
+AuthRouter.put("/:id", upload.array("images", 5), updateProduct); // Allows adding new images
+AuthRouter.delete("/:id", deleteProduct);
 
-module.exports = router;
+module.exports = AuthRouter;

@@ -2,6 +2,7 @@ const express = require("express");
 const { connectDB } = require("./db/db");
 const cors = require("cors");
 const productRoutes = require("./routers/productRoutes");
+const authRoutes = require("./routers/authRoutes"); // ✅ Corrected
 
 const app = express();
 const PORT = 3000;
@@ -22,8 +23,9 @@ app.get("/", (req, res) => {
   res.send("This is the backend service for Bluescope");
 });
 
-// Routes
+// ✅ Correct Route Registration
 app.use("/bluescope/products", productRoutes);
+app.use("/bluescope/auth", authRoutes); // ✅ This should be correct
 
 // Connect to the database
 connectDB();
