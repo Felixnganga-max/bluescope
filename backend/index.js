@@ -5,14 +5,15 @@ const productRoutes = require("./routers/productRoutes");
 const authRoutes = require("./routers/authRoutes");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // ✅ Proper CORS Configuration
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://bluescope-tau.vercel.app"], // Allow multiple origins
+    origin: ["http://localhost:5173", "https://bluescope-tau.vercel.app"], // Allow frontend requests
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // Allow cookies if using authentication
   })
 );
 
@@ -32,9 +33,8 @@ app.use("/bluescope/auth", authRoutes);
 // ✅ Connect to the Database
 connectDB()
   .then(() => {
-    // ✅ Start the Server Only After DB Connection
     app.listen(PORT, () => {
-      console.log(`✅ Server is running on http://localhost:${PORT}`);
+      console.log(`✅ Server running on http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
