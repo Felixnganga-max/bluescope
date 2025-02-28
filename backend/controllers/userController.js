@@ -4,19 +4,26 @@ const {
   sendVerificationEmail,
   sendWelcomeEmail,
 } = require("../mailtrap/emails");
-const Person = require("../models/userModel"); // Ensure you import your model
+const Person = require("../models/userModel");
 
 // User Signup
 const signup = async (req, res) => {
   const { email, password, name, role } = req.body;
 
   try {
+    // Validate required fields
     if (!email || !password || !name) {
-      throw new Error("All fields are required");
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
     }
 
-    // Check if user already exists
-    const existingUser = await Person.findOne({ email });
+    // Check if user already exists - use case-insensitive email check
+    const existingUser = await Person.findOne({
+      email: { $regex: new RegExp(`^${email}$`, "i") },
+    });
+
     if (existingUser) {
       return res
         .status(400)
@@ -24,18 +31,19 @@ const signup = async (req, res) => {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const salt = await bcryptjs.genSalt(12);
+    const hashedPassword = await bcryptjs.hash(password, salt);
 
     // Generate verification token
     const verificationToken = Math.floor(
       100000 + Math.random() * 900000
     ).toString();
 
-    // Create user
+    // Create user with trimmed email address to avoid whitespace issues
     const user = new Person({
-      email,
+      email: email.trim().toLowerCase(),
       password: hashedPassword,
-      name,
+      name: name.trim(),
       role,
       verificationToken,
       verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
@@ -55,7 +63,8 @@ const signup = async (req, res) => {
       user: { ...user._doc, password: undefined },
     });
   } catch (error) {
-    return res.status(400).json({ success: false, message: error.message });
+    console.error("Signup error:", error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -64,6 +73,13 @@ const verifyEmail = async (req, res) => {
   const { code } = req.body;
 
   try {
+    if (!code) {
+      return res.status(400).json({
+        success: false,
+        message: "Verification code is required",
+      });
+    }
+
     const user = await Person.findOne({
       verificationToken: code,
       verificationTokenExpiresAt: { $gt: Date.now() },
@@ -91,6 +107,7 @@ const verifyEmail = async (req, res) => {
       user: { ...user._doc, password: undefined },
     });
   } catch (error) {
+    console.error("Email verification error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -100,7 +117,7 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Check if we have the necessary info
+    // Validate required fields
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -108,39 +125,48 @@ const login = async (req, res) => {
       });
     }
 
-    // Find the user - make sure to use the same import name as in your other functions
-    const user = await Person.findOne({ email });
+    // Clean email input
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Find user with case-insensitive email search
+    const user = await Person.findOne({
+      email: { $regex: new RegExp(`^${cleanEmail}$`, "i") },
+    });
+
     if (!user) {
-      return res.status(401).json({ success: false, message: "Invalid email" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
     }
 
-    // Check if email is verified
+    // Check password
+    const isPasswordValid = await bcryptjs.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
+    }
+
+    // Check if email is verified (uncomment if you want to enforce verification)
+
     if (!user.isVerified) {
-      return res.status(403).json({
+      return res.status(400).json({
         success: false,
-        message: "Please verify your email first.",
+        message: "Please verify your email before logging in",
       });
     }
 
-    // Verify password
-    const isMatch = await bcryptjs.compare(password, user.password);
-    if (!isMatch) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Invalid password" });
-    }
-
-    // Update last login
-    user.lastLogin = Date.now();
-    await user.save();
-
-    // Set JWT token in cookie
+    // Set JWT token
     generateTokenAndSetCookie(res, user._id);
 
-    // Send response
+    // Update last login timestamp
+    user.lastLogin = new Date();
+    await user.save();
+
     res.status(200).json({
       success: true,
-      message: "Login successful",
+      message: "Logged in successfully",
       user: { ...user._doc, password: undefined },
     });
   } catch (error) {
@@ -151,11 +177,38 @@ const login = async (req, res) => {
 
 // Logout User
 const logout = (req, res) => {
-  res.clearCookie("token");
-  res.status(200).json({
-    success: true,
-    message: "Logged out successfully",
-  });
+  try {
+    res.clearCookie("token");
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({ success: false, message: "Failed to logout" });
+  }
+};
+
+// Get Current User
+const getCurrentUser = async (req, res) => {
+  try {
+    const user = await Person.findById(req.user.id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error("Get user error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
 // Export the functions
@@ -164,4 +217,5 @@ module.exports = {
   verifyEmail,
   login,
   logout,
+  getCurrentUser,
 };
