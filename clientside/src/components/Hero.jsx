@@ -1,11 +1,71 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import assets from "../assets/assets.js";
 
 export default function Hero() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for dropdown visibility
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+
+  // Banner data from database simulation
+  const bannerData = [
+    {
+      id: 1,
+      image: assets.banner,
+      title: "Does Your Brand Need More Visibility?",
+      subtitle: "Professional Quality",
+      cta: "Get Started",
+    },
+    {
+      id: 2,
+      image: assets.banner2 || assets.banner, // Fallback if banner2 doesn't exist
+      title: "Transform Your Brand Identity",
+      subtitle: "Custom Solutions",
+      cta: "Explore Options",
+    },
+    {
+      id: 3,
+      image: assets.banner3 || assets.banner, // Fallback if banner3 doesn't exist
+      title: "Stand Out From The Competition",
+      subtitle: "Premium Services",
+      cta: "Learn More",
+    },
+  ];
+
+  // Promotional cards data from database simulation
+  const promotionalCardsData = [
+    {
+      id: 1,
+      image: assets.notebook,
+      title: "Custom Notebooks",
+      subtitle: "Premium Collection",
+      description: "Perfect for corporate gifts and daily use",
+      badgeText: "NEW",
+      badgeColor: "bg-red-500",
+      cta: "Request Sample",
+    },
+    {
+      id: 2,
+      image: assets.pen,
+      title: "Custom Apparel",
+      subtitle: "Corporate Branding",
+      description: "High-quality custom printed t-shirts & polos",
+      badgeText: "FEATURED",
+      badgeColor: "bg-blue-500",
+      cta: "Contact Us",
+    },
+    {
+      id: 3,
+      image: assets.carier,
+      title: "Large Format",
+      subtitle: "Trade Show Ready",
+      description: "Banners, displays, and promotional materials",
+      badgeText: "POPULAR",
+      badgeColor: "bg-green-500",
+      cta: "Get Quote",
+    },
+  ];
 
   // Animation effect on component mount
   useEffect(() => {
@@ -14,8 +74,9 @@ export default function Hero() {
 
   // Function to handle WhatsApp click
   const handleWhatsAppClick = () => {
-    const phoneNumber = "1234567890"; // Replace with your WhatsApp number
-    const message = "Hello, I would like to get a quick quote."; // Replace with your message
+    const phoneNumber = "1234567890"; // WhatsApp number
+    const message =
+      "Hello, I would like to get a quote for your printing services.";
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
       message
     )}`;
@@ -24,14 +85,25 @@ export default function Hero() {
 
   // Function to handle Call click
   const handleCallClick = () => {
-    const phoneNumber = "1234567890"; // Replace with your phone number
+    const phoneNumber = "1234567890"; // Phone number
     window.location.href = `tel:${phoneNumber}`;
   };
 
   // Function to handle Get to Know Us click
   const handleGetToKnowUsClick = () => {
-    // You can attach your chatbot functionality here
+    // Chatbot functionality
     alert("Chatbot will be attached here.");
+  };
+
+  // Function to navigate banner slides
+  const navigateBanner = (direction) => {
+    if (direction === "next") {
+      setCurrentBannerIndex((prev) => (prev + 1) % bannerData.length);
+    } else {
+      setCurrentBannerIndex(
+        (prev) => (prev - 1 + bannerData.length) % bannerData.length
+      );
+    }
   };
 
   // Print shop categories data structure
@@ -110,12 +182,25 @@ export default function Hero() {
     },
   ];
 
+  const handleCategoryClick = (index) => {
+    // On mobile, toggle the active category
+    if (window.innerWidth < 1024) {
+      setActiveCategory(activeCategory === index ? null : index);
+    }
+  };
+
   const handleCategoryHover = (index) => {
-    setActiveCategory(index);
+    // Only handle hover on desktop
+    if (window.innerWidth >= 1024) {
+      setActiveCategory(index);
+    }
   };
 
   const handleCategoryLeave = () => {
-    setActiveCategory(null);
+    // Only handle hover on desktop
+    if (window.innerWidth >= 1024) {
+      setActiveCategory(null);
+    }
   };
 
   return (
@@ -179,6 +264,7 @@ export default function Hero() {
                 className="relative py-3 px-2 border-b border-gray-100 cursor-pointer hover:bg-gray-50 rounded-lg transition-all duration-200"
                 onMouseEnter={() => handleCategoryHover(index)}
                 onMouseLeave={handleCategoryLeave}
+                onClick={() => handleCategoryClick(index)}
               >
                 <div className="flex justify-between items-center hover:text-blue-600 transition-colors duration-200">
                   <span className="flex items-center">
@@ -194,16 +280,18 @@ export default function Hero() {
                   </span>
                 </div>
 
-                {/* Subcategories dropdown */}
+                {/* Subcategories dropdown - Desktop (right side) and Mobile (overlay) */}
                 {activeCategory === index && (
                   <ul
-                    className="absolute left-full top-0 ml-4 w-56 bg-white shadow-2xl rounded-lg border border-gray-200 z-50 py-3 animate-fadeIn"
+                    className={`lg:absolute lg:left-full lg:top-0 lg:ml-4 w-56 bg-white shadow-2xl rounded-lg border border-gray-200 z-50 py-3 animate-fadeIn ${
+                      window.innerWidth < 1024 ? "mt-2" : ""
+                    }`}
                     style={{
                       boxShadow:
                         "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
                     }}
                   >
-                    <div className="absolute left-0 top-4 transform -translate-x-2 w-3 h-3 rotate-45 bg-white border-l border-t border-gray-200"></div>
+                    <div className="lg:absolute lg:left-0 lg:top-4 lg:transform lg:-translate-x-2 lg:w-3 lg:h-3 lg:rotate-45 lg:bg-white lg:border-l lg:border-t lg:border-gray-200"></div>
                     <div className="px-3 mb-2 text-sm font-semibold text-gray-500 border-b pb-2">
                       {category.name}
                     </div>
@@ -217,7 +305,10 @@ export default function Hero() {
                       </li>
                     ))}
                     <div className="mt-2 px-4 pt-2 border-t">
-                      <button className="text-blue-600 text-sm hover:text-blue-800 transition-colors">
+                      <button
+                        className="text-blue-600 text-sm hover:text-blue-800 transition-colors"
+                        onClick={handleWhatsAppClick}
+                      >
                         View All {category.name} →
                       </button>
                     </div>
@@ -232,14 +323,17 @@ export default function Hero() {
             <p className="text-gray-600 text-xs mt-1">
               Contact our print experts
             </p>
-            <button className="mt-2 w-full bg-white text-purple-700 py-2 rounded-md shadow-sm text-sm font-medium hover:shadow-md transition-shadow duration-300">
+            <button
+              className="mt-2 w-full bg-white text-purple-700 py-2 rounded-md shadow-sm text-sm font-medium hover:shadow-md transition-shadow duration-300"
+              onClick={handleWhatsAppClick}
+            >
               Chat with Us
             </button>
           </div>
         </div>
       </div>
 
-      {/* Main Banner - Make taller to match the left sidebar */}
+      {/* Main Banner with Slider Navigation */}
       <div
         className="w-full lg:w-4/6 bg-white rounded-lg shadow-xl flex flex-col justify-center items-start relative overflow-hidden group h-full z-10"
         style={{
@@ -250,7 +344,7 @@ export default function Hero() {
       >
         <div className="w-full h-full relative">
           <img
-            src={assets.banner}
+            src={bannerData[currentBannerIndex].image}
             alt="Main Banner"
             className="w-full h-full object-cover rounded-lg transition-transform duration-700 group-hover:scale-105"
             style={{ objectPosition: "center" }}
@@ -260,29 +354,52 @@ export default function Hero() {
           {/* Banner content with enhanced styling */}
           <div className="absolute inset-0 flex flex-col justify-center items-start p-8 md:p-16 z-20 transition-all duration-500 transform group-hover:translate-y-[-8px]">
             <div className="bg-purple-600/20 text-white text-xs uppercase tracking-widest py-1 px-3 rounded-full mb-4 backdrop-blur-sm">
-              Professional Quality
+              {bannerData[currentBannerIndex].subtitle}
             </div>
             <h2 className="text-white text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg">
-              Does Your Brand Need More <br />
+              {bannerData[currentBannerIndex].title} <br />
               <span className="text-blue-500">Visibility?</span>
             </h2>
-            <p className="text-white text-xl uppercase font-bolder outline-1 rounded-3xl p-5 md:text-2xl mb-6 max-w-md drop-shadow-md leading-relaxed">
-              We <span className="text-blue-500">Design</span>
-              <br />
-              We <span className="text-blue-500">Print</span>
-              <br />
-              We <span className="text-blue-500">Brand</span>
-              <br />
-            </p>
+            <div className="text-white text-xl font-bold mb-6 max-w-md drop-shadow-md">
+              <div className="bg-blue-900/30 backdrop-blur-sm rounded-xl p-5 border border-blue-500/30">
+                <p className="uppercase flex items-center mb-3">
+                  <span className="text-blue-500 mr-2 text-2xl">✓</span>
+                  We{" "}
+                  <span className="text-blue-500 ml-2 font-extrabold">
+                    DESIGN
+                  </span>
+                </p>
+                <p className="uppercase flex items-center mb-3">
+                  <span className="text-blue-500 mr-2 text-2xl">✓</span>
+                  We{" "}
+                  <span className="text-blue-500 ml-2 font-extrabold">
+                    PRINT
+                  </span>
+                </p>
+                <p className="uppercase flex items-center">
+                  <span className="text-blue-500 mr-2 text-2xl">✓</span>
+                  We{" "}
+                  <span className="text-blue-500 ml-2 font-extrabold">
+                    BRAND
+                  </span>
+                </p>
+              </div>
+            </div>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-purple-600 text-white py-3 px-8 rounded-lg hover:bg-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
-                <span>Get Started</span>
+              <button
+                className="bg-purple-600 text-white py-3 px-8 rounded-lg hover:bg-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
+                onClick={handleWhatsAppClick}
+              >
+                <span>{bannerData[currentBannerIndex].cta}</span>
                 <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">
                   →
                 </span>
               </button>
-              <button className="bg-white/20 backdrop-blur-sm text-white border border-white/40 py-3 px-8 rounded-lg hover:bg-white/30 transition-all duration-300 shadow-lg hover:shadow-xl">
-                View Samples
+              <button
+                className="bg-white/20 backdrop-blur-sm text-white border border-white/40 py-3 px-8 rounded-lg hover:bg-white/30 transition-all duration-300 shadow-lg hover:shadow-xl"
+                onClick={handleWhatsAppClick}
+              >
+                Request Sample
               </button>
             </div>
 
@@ -290,147 +407,128 @@ export default function Hero() {
             <div className="absolute bottom-6 left-8 md:left-16 right-8 md:right-16">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full flex items-center">
-                  <span className="text-yellow-300 mr-1">★★★★★</span>
-                  <span className="text-white text-xs">
-                    4.9/5 (2000+ Reviews)
-                  </span>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full flex items-center">
                   <span className="text-white text-xs">🔒 Secure Ordering</span>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full flex items-center">
                   <span className="text-white text-xs">🚚 Fast Delivery</span>
                 </div>
+                <div className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full flex items-center">
+                  <span className="text-white text-xs">🔄 24/7 Support</span>
+                </div>
               </div>
             </div>
+          </div>
+
+          {/* Banner Navigation Arrows */}
+          <button
+            onClick={() => navigateBanner("prev")}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 backdrop-blur-sm text-white rounded-full p-3 shadow-lg transition-all duration-300 z-30"
+            aria-label="Previous banner"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <button
+            onClick={() => navigateBanner("next")}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 backdrop-blur-sm text-white rounded-full p-3 shadow-lg transition-all duration-300 z-30"
+            aria-label="Next banner"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+
+          {/* Dots for banner navigation */}
+          <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex space-x-2 z-30">
+            {bannerData.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentBannerIndex(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  currentBannerIndex === index
+                    ? "bg-white scale-125"
+                    : "bg-white/50 hover:bg-white/70"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Promotions with Enhanced Styling */}
+      {/* Promotions with Enhanced Styling - Now using data from database simulation */}
       <div
         className="w-full lg:w-2/6 flex flex-col gap-4 z-10"
         style={{ minHeight: "32rem" }}
       >
-        {/* First promotional card */}
-        <div
-          className="bg-cover bg-center text-white rounded-xl relative overflow-hidden group shadow-xl transition-transform duration-300 hover:-translate-y-1 flex-1"
-          style={{
-            backgroundImage: `url(${assets.notebook})`,
-            height: "calc(33.333% - 0.667rem)",
-            boxShadow:
-              "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/80 group-hover:from-black/30 group-hover:to-black/70 transition-all duration-300"></div>
-          <div className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-20">
-            20% OFF
-          </div>
-          <div className="relative z-10 p-6 flex flex-col h-full justify-between transition-all duration-300 transform group-hover:translate-y-[-4px]">
-            <div>
-              <div className="text-xs uppercase tracking-wider mb-1 opacity-75">
-                Premium Collection
-              </div>
-              <h4 className="text-2xl font-bold mb-1">Custom Notebooks</h4>
-              <p className="text-sm mb-3 max-w-xs opacity-90">
-                Perfect for corporate gifts and daily use
-              </p>
+        {/* Map through promotional cards data */}
+        {promotionalCardsData.map((card, index) => (
+          <div
+            key={card.id}
+            className="bg-cover bg-center text-white rounded-xl relative overflow-hidden group shadow-xl transition-transform duration-300 hover:-translate-y-1 flex-1"
+            style={{
+              backgroundImage: `url(${card.image})`,
+              height: "calc(33.333% - 0.667rem)",
+              boxShadow:
+                "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60 group-hover:from-black/20 group-hover:to-black/50 transition-all duration-300"></div>
+            <div
+              className={`absolute top-0 right-0 ${card.badgeColor} text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-20`}
+            >
+              {card.badgeText}
             </div>
-            <div>
-              <div className="flex items-baseline gap-2 mb-3">
-                <span className="text-sm line-through opacity-70">$16.99</span>
-                <span className="font-bold text-lg">$12.99</span>
+            <div className="relative z-10 p-6 flex flex-col h-full justify-between transition-all duration-300 transform group-hover:translate-y-[-4px]">
+              <div>
+                <div className="text-xs uppercase tracking-wider mb-1 opacity-75">
+                  {card.subtitle}
+                </div>
+                <h4 className="text-2xl font-bold mb-1">{card.title}</h4>
+                <p className="text-sm mb-3 max-w-xs opacity-90">
+                  {card.description}
+                </p>
               </div>
-              <button className="bg-white/20 backdrop-blur-sm text-white border border-white/40 py-2 px-4 rounded-lg hover:bg-white/30 transition-all duration-300 text-sm flex items-center gap-2 group/btn">
-                <span>Shop Now</span>
-                <span className="transition-transform duration-300 group-hover/btn:translate-x-1">
-                  →
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Second promotional card */}
-        <div
-          className="bg-cover bg-center text-white rounded-xl relative overflow-hidden group shadow-xl transition-transform duration-300 hover:-translate-y-1 flex-1"
-          style={{
-            backgroundImage: `url(${assets.pen})`,
-            height: "calc(33.333% - 0.667rem)",
-            boxShadow:
-              "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/80 group-hover:from-black/30 group-hover:to-black/70 transition-all duration-300"></div>
-          <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-20">
-            NEW ARRIVAL
-          </div>
-          <div className="relative z-10 p-6 flex flex-col h-full justify-between transition-all duration-300 transform group-hover:translate-y-[-4px]">
-            <div>
-              <div className="text-xs uppercase tracking-wider mb-1 opacity-75">
-                Corporate Branding
+              <div>
+                <button
+                  className="bg-white/20 backdrop-blur-sm text-white border border-white/40 py-2 px-4 rounded-lg hover:bg-white/30 transition-all duration-300 text-sm flex items-center gap-2 group/btn"
+                  onClick={handleWhatsAppClick}
+                >
+                  <span>{card.cta}</span>
+                  <span className="transition-transform duration-300 group-hover/btn:translate-x-1">
+                    →
+                  </span>
+                </button>
               </div>
-              <h4 className="text-2xl font-bold mb-1">Custom Apparel</h4>
-              <p className="text-sm mb-3 max-w-xs opacity-90">
-                High-quality custom printed t-shirts & polos
-              </p>
-            </div>
-            <div>
-              <div className="flex items-baseline gap-2 mb-3">
-                <span className="font-bold text-lg">From $18.99/item</span>
-              </div>
-              <button className="bg-white/20 backdrop-blur-sm text-white border border-white/40 py-2 px-4 rounded-lg hover:bg-white/30 transition-all duration-300 text-sm flex items-center gap-2 group/btn">
-                <span>Bulk Pricing</span>
-                <span className="transition-transform duration-300 group-hover/btn:translate-x-1">
-                  →
-                </span>
-              </button>
             </div>
           </div>
-        </div>
-
-        {/* Third promotional card */}
-        <div
-          className="bg-cover bg-center text-white rounded-xl relative overflow-hidden group shadow-xl transition-transform duration-300 hover:-translate-y-1 flex-1"
-          style={{
-            backgroundImage: `url(${assets.carier})`,
-            height: "calc(33.333% - 0.667rem)",
-            boxShadow:
-              "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/80 group-hover:from-black/30 group-hover:to-black/70 transition-all duration-300"></div>
-          <div className="absolute top-0 right-0 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-20">
-            FAST TURNAROUND
-          </div>
-          <div className="relative z-10 p-6 flex flex-col h-full justify-between transition-all duration-300 transform group-hover:translate-y-[-4px]">
-            <div>
-              <div className="text-xs uppercase tracking-wider mb-1 opacity-75">
-                Trade Show Ready
-              </div>
-              <h4 className="text-2xl font-bold mb-1">Large Format</h4>
-              <p className="text-sm mb-3 max-w-xs opacity-90">
-                Banners, displays, and promotional materials
-              </p>
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="inline-block px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-xs">
-                  48hr Rush Available
-                </span>
-              </div>
-              <button className="bg-white/20 backdrop-blur-sm text-white border border-white/40 py-2 px-4 rounded-lg hover:bg-white/30 transition-all duration-300 text-sm flex items-center gap-2 group/btn">
-                <span>Request Quote</span>
-                <span className="transition-transform duration-300 group-hover/btn:translate-x-1">
-                  →
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* Optional: Floating Call-to-Action Button (visible on scroll) */}
+      {/* Floating Call-to-Action Button (visible on scroll) */}
       <div className="fixed bottom-6 right-6 z-50 hidden md:block">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}

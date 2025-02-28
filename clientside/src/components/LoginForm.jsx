@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -7,6 +8,7 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,6 +48,7 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
       setLoading(false);
       if (onSuccess) onSuccess(data);
       onClose();
+      navigate("/admin");
     } catch (err) {
       setLoading(false);
       setError(err.message || "An error occurred during login");
