@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -19,17 +19,62 @@ import AuthController from "./components/AuthController";
 
 // Function to check if the user is authenticated
 const isAuthenticated = () => {
-  return localStorage.getItem("token") !== null; // Adjust based on how you store auth tokens
+  // Check localStorage first
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    console.log("Authentication confirmed via localStorage token");
+    return true;
+  }
+
+  // If no token in localStorage, check cookies
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return null;
+  };
+
+  const cookieToken =
+    getCookie("token") || getCookie("authToken") || getCookie("jwt");
+
+  if (cookieToken) {
+    console.log("Authentication confirmed via cookie token");
+    // Store in localStorage for future checks
+    localStorage.setItem("token", cookieToken);
+    return true;
+  }
+
+  console.log("No authentication token found");
+  return false;
 };
 
 // PrivateRoute component to protect admin routes
 const PrivateRoute = ({ element }) => {
-  return isAuthenticated() ? element : <Navigate to="/" />;
+  const authenticated = isAuthenticated();
+  console.log("PrivateRoute - Authentication status:", authenticated);
+
+  if (!authenticated) {
+    console.log("Not authenticated, redirecting to home page");
+    return <Navigate to="/" />;
+  }
+
+  console.log("Authenticated, allowing access to protected route");
+  return element;
 };
 
 function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
+
+  // Debug auth status when component mounts or location changes
+  useEffect(() => {
+    console.log("Current path:", location.pathname);
+    console.log("Is admin route:", isAdminRoute);
+    if (isAdminRoute) {
+      console.log("Auth status for admin route:", isAuthenticated());
+    }
+  }, [location.pathname, isAdminRoute]);
 
   return (
     <>

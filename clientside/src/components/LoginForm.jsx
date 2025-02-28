@@ -18,17 +18,21 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
     }));
   };
 
+  // Function to get cookie value by name
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      // Log the request for debugging
-      console.log("Sending login request with data:", {
-        email: formData.email,
-        password: "******", // Don't log actual password
-      });
+      console.log("Sending login request...");
 
       const response = await fetch(
         "https://bluescope-eotl.vercel.app/bluescope/auth/login",
@@ -38,53 +42,61 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(formData),
-          credentials: "include", // Include cookies if your API uses them
+          credentials: "include", // Essential for cookies
         }
       );
 
       const data = await response.json();
-      console.log("Login response:", data); // Log the response
+      console.log("Login response received:", data);
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to log in");
       }
 
-      // Check if token exists in response
-      if (!data.token) {
-        throw new Error("No authentication token received");
+      // Extract token from cookies and store in localStorage for compatibility
+      const token =
+        getCookie("token") || getCookie("authToken") || getCookie("jwt");
+      console.log("Found token in cookies:", token ? "Yes" : "No");
+
+      if (token) {
+        localStorage.setItem("token", token);
+        console.log("Token stored in localStorage");
+      } else {
+        console.warn("No token found in cookies");
+        // If the token is in the response body, use that instead
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          console.log("Token from response body stored in localStorage");
+        } else {
+          console.warn("No token found in response body either");
+        }
       }
 
-      // Store token and user data
-      localStorage.setItem("authToken", data.token);
-
-      // Store user data if it exists
+      // Store user data if available
       if (data.user) {
         localStorage.setItem("user", JSON.stringify(data.user));
       }
 
-      // First handle success callback if provided
+      console.log("Login successful, navigating to admin page...");
+
+      // Trigger success callback if provided
       if (onSuccess) {
         onSuccess(data);
       }
 
-      // Then navigate before closing modal
+      // Set loading false before navigation
+      setLoading(false);
+
+      // Navigate to admin
       navigate("/admin");
 
-      // Finally close the modal
-      setLoading(false);
+      // Close the modal
       onClose();
     } catch (err) {
       console.error("Login error:", err);
       setLoading(false);
       setError(err.message || "An error occurred during login");
     }
-  };
-
-  // Handle forgot password
-  const handleForgotPassword = () => {
-    // Implement forgot password functionality or navigation
-    console.log("Forgot password clicked");
-    // You can navigate to a forgot password page or open another modal
   };
 
   return (
@@ -160,7 +172,6 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
             <div className="mt-1 text-right">
               <button
                 type="button"
-                onClick={handleForgotPassword}
                 className="text-sm text-blue-600 hover:text-blue-800"
               >
                 Forgot password?
