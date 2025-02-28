@@ -31,7 +31,7 @@ const ProductList = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          "https://bluescope-eotl.vercel.app/bluescope/products"
+          "https://bluescope-eotl.vercel.app/bluescope/products/"
         );
         setProducts(response.data);
 

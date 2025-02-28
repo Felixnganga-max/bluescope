@@ -32,7 +32,7 @@ const Catalogue = () => {
       setIsLoading(true);
       try {
         const response = await axios.get(
-          "http://localhost:3000/bluescope/products"
+          "https://bluescope-eotl.vercel.app/bluescope/products/"
         );
 
         // Format all products and ensure category names are capitalized

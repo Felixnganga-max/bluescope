@@ -25,7 +25,7 @@ const SignupForm = ({ onClose, onSuccess }) => {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/bluescope/auth/sign-up",
+        "https://bluescope-eotl.vercel.app/bluescope/auth/sign-up",
         {
           method: "POST",
           headers: {
