@@ -24,6 +24,12 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
     setError(null);
 
     try {
+      // Log the request for debugging
+      console.log("Sending login request with data:", {
+        email: formData.email,
+        password: "******", // Don't log actual password
+      });
+
       const response = await fetch(
         "https://bluescope-eotl.vercel.app/bluescope/auth/login",
         {
@@ -32,27 +38,53 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(formData),
+          credentials: "include", // Include cookies if your API uses them
         }
       );
 
       const data = await response.json();
+      console.log("Login response:", data); // Log the response
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to log in");
       }
 
-      // Store token or user data in localStorage or context
-      localStorage.setItem("authToken", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      // Check if token exists in response
+      if (!data.token) {
+        throw new Error("No authentication token received");
+      }
 
-      setLoading(false);
-      if (onSuccess) onSuccess(data);
-      onClose();
+      // Store token and user data
+      localStorage.setItem("authToken", data.token);
+
+      // Store user data if it exists
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+
+      // First handle success callback if provided
+      if (onSuccess) {
+        onSuccess(data);
+      }
+
+      // Then navigate before closing modal
       navigate("/admin");
+
+      // Finally close the modal
+      setLoading(false);
+      onClose();
     } catch (err) {
+      console.error("Login error:", err);
       setLoading(false);
       setError(err.message || "An error occurred during login");
     }
+  };
+
+  // Handle forgot password
+  const handleForgotPassword = () => {
+    // Implement forgot password functionality or navigation
+    console.log("Forgot password clicked");
+    // You can navigate to a forgot password page or open another modal
   };
 
   return (
@@ -61,8 +93,10 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-800">Log In</h2>
           <button
+            type="button"
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 focus:outline-none"
+            aria-label="Close"
           >
             <svg
               className="h-6 w-6"
@@ -86,7 +120,7 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <div className="mb-4">
             <label
               htmlFor="email"
@@ -102,6 +136,7 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+              autoComplete="email"
             />
           </div>
 
@@ -120,10 +155,12 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+              autoComplete="current-password"
             />
             <div className="mt-1 text-right">
               <button
                 type="button"
+                onClick={handleForgotPassword}
                 className="text-sm text-blue-600 hover:text-blue-800"
               >
                 Forgot password?
@@ -143,6 +180,7 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
         <div className="mt-4 text-center text-sm text-gray-600">
           Don't have an account?{" "}
           <button
+            type="button"
             onClick={onSignupClick}
             className="text-blue-600 hover:text-blue-800 font-medium"
           >
