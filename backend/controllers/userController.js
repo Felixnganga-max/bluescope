@@ -1,10 +1,17 @@
 const bcryptjs = require("bcryptjs");
-const generateTokenAndSetCookie = require("../utils/generateTokenAndSetCookie");
+const jwt = require("jsonwebtoken");
 const {
   sendVerificationEmail,
   sendWelcomeEmail,
 } = require("../mailtrap/emails");
 const Person = require("../models/userModel");
+
+// Generate Token Function (replaces generateTokenAndSetCookie)
+const generateToken = (userId) => {
+  return jwt.sign({ userId }, process.env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
+};
 
 // User Signup
 const signup = async (req, res) => {
@@ -54,12 +61,13 @@ const signup = async (req, res) => {
     // Send verification email
     await sendVerificationEmail(user.email, verificationToken);
 
-    // Set JWT token in cookie
-    generateTokenAndSetCookie(res, user._id);
+    // Generate JWT token
+    const token = generateToken(user._id);
 
     res.status(201).json({
       success: true,
       message: "User registered successfully. Please verify your email.",
+      token,
       user: { ...user._doc, password: undefined },
     });
   } catch (error) {
@@ -148,8 +156,7 @@ const login = async (req, res) => {
         .json({ success: false, message: "Invalid email or password" });
     }
 
-    // Check if email is verified (uncomment if you want to enforce verification)
-
+    // Check if email is verified
     if (!user.isVerified) {
       return res.status(400).json({
         success: false,
@@ -157,8 +164,8 @@ const login = async (req, res) => {
       });
     }
 
-    // Set JWT token
-    generateTokenAndSetCookie(res, user._id);
+    // Generate JWT token
+    const token = generateToken(user._id);
 
     // Update last login timestamp
     user.lastLogin = new Date();
@@ -167,6 +174,7 @@ const login = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Logged in successfully",
+      token,
       user: { ...user._doc, password: undefined },
     });
   } catch (error) {
@@ -178,7 +186,7 @@ const login = async (req, res) => {
 // Logout User
 const logout = (req, res) => {
   try {
-    res.clearCookie("token");
+    // No need to clear cookies, as we're using localStorage
     res.status(200).json({
       success: true,
       message: "Logged out successfully",
@@ -189,10 +197,63 @@ const logout = (req, res) => {
   }
 };
 
+// Verify Token
+const verifyToken = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({
+        isValid: false,
+        message: "No token provided",
+      });
+    }
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Find user
+    const user = await Person.findById(decoded.userId).select("-password");
+
+    if (!user) {
+      return res.status(401).json({
+        isValid: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      isValid: true,
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error("Token verification error:", error);
+    return res.status(401).json({
+      isValid: false,
+      message: "Invalid token",
+    });
+  }
+};
+
 // Get Current User
 const getCurrentUser = async (req, res) => {
   try {
-    const user = await Person.findById(req.user.id).select("-password");
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "No token provided",
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await Person.findById(decoded.userId).select("-password");
 
     if (!user) {
       return res.status(404).json({
@@ -217,5 +278,6 @@ module.exports = {
   verifyEmail,
   login,
   logout,
+  verifyToken,
   getCurrentUser,
 };

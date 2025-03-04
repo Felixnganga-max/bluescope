@@ -1,110 +1,191 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Package, PenSquare, Trash2 } from "lucide-react";
+import { Plus, Package, PenSquare, Trash2, Image, X } from "lucide-react";
 import AddProducts from "./AddProducts";
+import EditProducts from "./EditProducts";
 import toast, { Toaster } from "react-hot-toast";
 
 const API_URL = "http://localhost:3000/bluescope/products";
 
 const ProductManagement = () => {
   const [isAddMode, setIsAddMode] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch products from API
-  useEffect(() => {
+  const fetchProducts = () => {
+    setIsLoading(true);
     fetch(API_URL)
       .then((res) => res.json())
-      .then((data) => setProducts(data))
-      .catch((error) => console.error("Error fetching products:", error));
+      .then((data) => {
+        setProducts(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching products:", error);
+        toast.error("Failed to load products", {
+          position: "top-center",
+        });
+        setIsLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchProducts();
   }, []);
 
   // Delete product
   const handleDelete = (id) => {
+    // Confirm deletion
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+    if (!confirmDelete) return;
+
     fetch(`${API_URL}/${id}`, { method: "DELETE" })
-      .then(() => {
-        setProducts(products.filter((product) => product.id !== id));
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Delete failed");
+        }
+        setProducts(products.filter((product) => product._id !== id));
         toast.success("Product deleted successfully", {
           position: "top-center",
         });
       })
-      .catch((error) => console.error("Error deleting product:", error));
+      .catch((error) => {
+        console.error("Error deleting product:", error);
+        toast.error("Failed to delete product", {
+          position: "top-center",
+        });
+      });
   };
 
-  // Add mode content
+  // Edit product handler
+  const handleEdit = (product) => {
+    setSelectedProduct(product);
+    setIsEditMode(true);
+  };
+
+  // Close edit modal and reset state
+  const handleCloseEdit = () => {
+    setIsEditMode(false);
+    setSelectedProduct(null);
+  };
+
+  // Render add product mode
   if (isAddMode) {
     return (
-      <div className="fixed top-0 left-0 w-full h-full bg-white z-50 p-6 overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Add New Product</h2>
-          <button
-            onClick={() => setIsAddMode(false)}
-            className="text-gray-500 hover:text-gray-700 text-2xl"
-          >
-            ×
-          </button>
-        </div>
+      <AddProducts
+        onClose={() => setIsAddMode(false)}
+        onProductAdded={fetchProducts}
+      />
+    );
+  }
 
-        <AddProducts isOpen={true} onClose={() => setIsAddMode(false)} />
-      </div>
+  // Render edit product mode
+  if (isEditMode && selectedProduct) {
+    return (
+      <EditProducts
+        product={selectedProduct}
+        onClose={handleCloseEdit}
+        onProductUpdated={fetchProducts}
+      />
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="container mx-auto px-4 py-8 space-y-6">
       {/* Toast notifications */}
       <Toaster />
 
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <Package size={24} /> Product Management
+        <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
+          <Package className="text-blue-600" size={32} />
+          Product Management
         </h2>
         <button
           onClick={() => setIsAddMode(true)}
-          className="px-4 py-2 rounded-md flex items-center bg-blue-500 text-white hover:bg-blue-600"
+          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md"
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="mr-2" size={20} />
           Add Product
         </button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {products.map((product) => (
-          <div key={product.id} className="border rounded-lg p-4 shadow-sm">
-            {/* Show first image if available */}
-            {product.images && product.images.length > 0 ? (
-              <img
-                src={product.images[0]}
-                alt={product.name}
-                className="w-full h-40 object-cover rounded"
-              />
-            ) : (
-              <div className="w-full h-40 bg-gray-200 flex items-center justify-center">
-                No Image
+      {/* Products Grid */}
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500"></div>
+        </div>
+      ) : products.length === 0 ? (
+        <div className="text-center py-12 bg-gray-50 rounded-lg">
+          <Image className="mx-auto mb-4 text-gray-400" size={48} />
+          <p className="text-xl text-gray-600">No products found</p>
+          <p className="text-gray-500 mt-2">
+            Click "Add Product" to get started
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {products.map((product) => (
+            <div
+              key={product._id}
+              className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow group"
+            >
+              {/* Product Image */}
+              <div className="relative h-48 overflow-hidden">
+                {product.images && product.images.length > 0 ? (
+                  <img
+                    src={product.images[0]}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <Image className="text-gray-400" size={48} />
+                  </div>
+                )}
               </div>
-            )}
 
-            <div className="flex justify-between items-start mt-2">
-              <div>
-                <h3 className="font-semibold">{product.name}</h3>
-                <p className="text-sm text-gray-600">Price: ${product.price}</p>
-                <p className="text-sm text-gray-600">
-                  Stock: {product.stock} units
-                </p>
-              </div>
-              <div className="space-x-2">
-                <button className="p-2 hover:bg-gray-100 rounded-md">
-                  <PenSquare className="w-4 h-4" />
-                </button>
-                <button
-                  className="p-2 hover:bg-gray-100 rounded-md"
-                  onClick={() => handleDelete(product.id)}
-                >
-                  <Trash2 className="w-4 h-4 text-red-500" />
-                </button>
+              {/* Product Details */}
+              <div className="p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-lg text-gray-800 truncate max-w-[200px]">
+                      {product.name}
+                    </h3>
+                    <div className="text-sm text-gray-600 space-y-1 mt-1">
+                      <p>Price: ${product.price.toFixed(2)}</p>
+                      <p>Stock: {product.stock} units</p>
+                      {product.category && <p>Category: {product.category}</p>}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleEdit(product)}
+                      className="p-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                      title="Edit Product"
+                    >
+                      <PenSquare className="w-5 h-5 text-gray-600 hover:text-blue-600" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(product._id)}
+                      className="p-2 bg-gray-100 hover:bg-red-100 rounded-md transition-colors"
+                      title="Delete Product"
+                    >
+                      <Trash2 className="w-5 h-5 text-gray-600 hover:text-red-600" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

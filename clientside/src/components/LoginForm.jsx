@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
+const LoginForm = ({ onClose, onSignupClick }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -12,102 +12,72 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
-  // Function to get cookie value by name
-  const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(";").shift();
-    return null;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Basic client-side validation
+    if (!formData.email || !formData.password) {
+      setError("Please enter both email and password");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      console.log("Sending login request...");
-
       const response = await fetch(
-        "https://bluescope-eotl.vercel.app/bluescope/auth/login",
+        "http://localhost:3000/bluescope/auth/login",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(formData),
-          credentials: "include", // Essential for cookies
+          credentials: "include",
         }
       );
 
       const data = await response.json();
-      console.log("Login response received:", data);
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to log in");
+      if (!data.success) {
+        throw new Error(data.message || "Login failed");
       }
 
-      // Extract token from cookies and store in localStorage for compatibility
-      const token =
-        getCookie("token") || getCookie("authToken") || getCookie("jwt");
-      console.log("Found token in cookies:", token ? "Yes" : "No");
+      // Store token and user in localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      if (token) {
-        localStorage.setItem("token", token);
-        console.log("Token stored in localStorage");
-      } else {
-        console.warn("No token found in cookies");
-        // If the token is in the response body, use that instead
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-          console.log("Token from response body stored in localStorage");
-        } else {
-          console.warn("No token found in response body either");
-        }
-      }
-
-      // Store user data if available
-      if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-      }
-
-      console.log("Login successful, navigating to admin page...");
-
-      // Trigger success callback if provided
-      if (onSuccess) {
-        onSuccess(data);
-      }
-
-      // Set loading false before navigation
-      setLoading(false);
-
-      // Navigate to admin
+      // Navigate to admin page
       navigate("/admin");
 
-      // Close the modal
-      onClose();
+      // Close modal if provided
+      onClose?.();
     } catch (err) {
-      console.error("Login error:", err);
-      setLoading(false);
       setError(err.message || "An error occurred during login");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleForgotPassword = () => {
+    navigate("/forgot-password");
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md transform transition-all">
+      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-800">Log In</h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 focus:outline-none"
+            className="text-gray-500 hover:text-gray-700"
             aria-label="Close"
           >
             <svg
@@ -172,6 +142,7 @@ const LoginForm = ({ onClose, onSignupClick, onSuccess }) => {
             <div className="mt-1 text-right">
               <button
                 type="button"
+                onClick={handleForgotPassword}
                 className="text-sm text-blue-600 hover:text-blue-800"
               >
                 Forgot password?

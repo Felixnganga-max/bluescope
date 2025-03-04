@@ -7,6 +7,21 @@ export default function Hero() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+
+  // WhatsApp contact details
+  const whatsAppContacts = [
+    {
+      name: "Sales Team",
+      phoneNumber: "+254797743366",
+      department: "For quotes and general inquiries",
+    },
+    {
+      name: "Customer Support",
+      phoneNumber: "+254796843530",
+      department: "For existing orders and technical support",
+    },
+  ];
 
   // Banner data from database simulation
   const bannerData = [
@@ -72,15 +87,33 @@ export default function Hero() {
     setIsLoaded(true);
   }, []);
 
-  // Function to handle WhatsApp click
+  // Function to handle WhatsApp click - now opens a modal
   const handleWhatsAppClick = () => {
-    const phoneNumber = "1234567890"; // WhatsApp number
+    setShowWhatsAppModal(true);
+  };
+
+  // Function to send message to specific WhatsApp number
+  const sendWhatsAppMessage = (phoneNumber) => {
     const message =
-      "Hello, I would like to get a quote for your printing services.";
+      "Hello, I would be excited to get a quote for your printing services.";
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
       message
     )}`;
     window.open(url, "_blank");
+    setShowWhatsAppModal(false);
+  };
+
+  // Function to send message to all WhatsApp numbers
+  const sendToAllWhatsApp = () => {
+    whatsAppContacts.forEach((contact) => {
+      const message =
+        "Hello, I would like to get a quote for your printing services.";
+      const url = `https://wa.me/${
+        contact.phoneNumber
+      }?text=${encodeURIComponent(message)}`;
+      window.open(url, "_blank");
+    });
+    setShowWhatsAppModal(false);
   };
 
   // Function to handle Call click
@@ -527,6 +560,97 @@ export default function Hero() {
           </div>
         ))}
       </div>
+
+      {/* WhatsApp Contact Modal */}
+      {showWhatsAppModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl p-6 m-4 max-w-md w-full animate-fadeIn">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-xl text-gray-800">Contact Us</h3>
+              <button
+                onClick={() => setShowWhatsAppModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <p className="text-gray-600 mb-6">
+              Choose which department you'd like to contact:
+            </p>
+
+            <div className="space-y-4">
+              {whatsAppContacts.map((contact, index) => (
+                <button
+                  key={index}
+                  onClick={() => sendWhatsAppMessage(contact.phoneNumber)}
+                  className="flex items-center justify-between w-full bg-green-50 hover:bg-green-100 text-green-800 py-3 px-4 rounded-lg transition-colors duration-300 border border-green-200"
+                >
+                  <div className="flex items-center">
+                    <div className="bg-green-500 rounded-full p-2 mr-3">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-white"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                      </svg>
+                    </div>
+                    <div className="text-left">
+                      <div className="font-medium">{contact.name}</div>
+                      <div className="text-xs text-gray-500">
+                        {contact.department}
+                      </div>
+                    </div>
+                  </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-green-600"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              ))}
+
+              <button
+                onClick={sendToAllWhatsApp}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
+                Contact Both Departments
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Floating Call-to-Action Button (visible on scroll) */}
       <div className="fixed bottom-6 right-6 z-50 hidden md:block">
