@@ -405,10 +405,13 @@ const Sidebar = () => {
                 </div>
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-white">
+                <p className="text-lg font-medium text-white">
                   {userData.name}
                 </p>
-                <p className="text-xs text-gray-400">{userData.role}</p>
+                <p className="text-sm text-gray-400">
+                  {userData.role.charAt(0).toUpperCase() +
+                    userData.role.slice(1)}
+                </p>
               </div>
             </div>
             <button
