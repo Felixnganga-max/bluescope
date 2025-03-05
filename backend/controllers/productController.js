@@ -30,7 +30,7 @@ const createProduct = async (req, res) => {
     console.log("Uploaded Files:", req.files); // Debugging
 
     // Ensure required fields exist
-    if (!req.body.name || !req.body.price) {
+    if (!req.body.name) {
       return res.status(400).json({ message: "Name and Price are required." });
     }
 

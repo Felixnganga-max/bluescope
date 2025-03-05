@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import axios from "axios";
 
 // Icon components remain unchanged
 const Icons = {
@@ -193,57 +194,77 @@ const Sidebar = () => {
   });
   const location = useLocation();
 
-  // Get user data from token in localStorage
   useEffect(() => {
-    const getUserDataFromToken = () => {
+    const getUserDataFromToken = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (token) {
-          // For JWT tokens, you can decode them without sending to the server
-          // This assumes your token is in JWT format
-          const parseJwt = (token) => {
-            try {
-              // Split the token and get the payload part
-              const base64Url = token.split(".")[1];
-              const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-              const jsonPayload = decodeURIComponent(
-                atob(base64)
-                  .split("")
-                  .map(function (c) {
-                    return (
-                      "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
-                    );
-                  })
-                  .join("")
-              );
-              return JSON.parse(jsonPayload);
-            } catch (e) {
-              console.error("Error parsing JWT token:", e);
-              return null;
+
+        if (!token) {
+          setUserData({
+            name: "Not Logged In",
+            role: "Guest",
+          });
+          return;
+        }
+
+        try {
+          const response = await axios.get(
+            "http://localhost:3000/bluescope/auth/current-user",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              timeout: 5000, // 5 second timeout
             }
-          };
+          );
 
-          const decodedToken = parseJwt(token);
+          console.log("Current User Response:", response.data);
 
-          if (decodedToken && decodedToken.name && decodedToken.role) {
+          if (response.data.success && response.data.user) {
+            const user = response.data.user;
             setUserData({
-              name: decodedToken.name,
-              role: decodedToken.role,
+              name: user.name || "Unknown User",
+              role: user.role || "Unknown Role",
             });
           } else {
-            console.warn("Token doesn't contain expected user data");
-            // Fallback to default values or fetch from API
             setUserData({
-              name: "Unknown User",
-              role: "Unknown Role",
+              name: "Invalid Token",
+              role: "Access Denied",
+            });
+          }
+        } catch (error) {
+          console.error("Detailed Error:", error);
+
+          if (error.code === "ECONNABORTED") {
+            setUserData({
+              name: "Connection Timeout",
+              role: "Check server connection",
+            });
+          } else if (error.response) {
+            // The request was made and the server responded with a status code
+            setUserData({
+              name: "Server Error",
+              role: error.response.status.toString(),
+            });
+          } else if (error.request) {
+            // The request was made but no response was received
+            setUserData({
+              name: "No Server Response",
+              role: "Check backend server",
+            });
+          } else {
+            // Something happened in setting up the request
+            setUserData({
+              name: "Network Error",
+              role: "Unable to connect",
             });
           }
         }
       } catch (error) {
-        console.error("Error getting user data from token:", error);
+        console.error("Token Error:", error);
         setUserData({
-          name: "Error Loading",
-          role: "Please refresh",
+          name: "Authentication Error",
+          role: "Please log in again",
         });
       }
     };

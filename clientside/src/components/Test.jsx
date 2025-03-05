@@ -2,28 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const AddProducts = () => {
-  // Comprehensive list of printing and related categories
-  const categories = [
-    "Stationery",
-    "Clothes",
-    "Signs",
-    "Promotional Items",
-    "Gifts",
-    "Large Format Printing",
-    "Business Cards",
-    "Brochures",
-    "Banners",
-    "Posters",
-    "Flyers",
-    "Calendars",
-    "Notebooks",
-    "Packaging",
-    "Stickers",
-    "Custom Printing",
-    "Exhibition Materials",
-    "Marketing Collateral",
-  ];
-
   const [product, setProduct] = useState({
     name: "",
     description: "",
@@ -61,8 +39,18 @@ const AddProducts = () => {
     e.preventDefault();
 
     // Validation checks
-    if (!product.name || !product.description || !product.category) {
-      setError("Name, description, and category are required.");
+    if (!product.name || !product.price || !product.stock) {
+      setError("Name, price, and stock are required.");
+      return;
+    }
+
+    if (isNaN(product.price) || product.price <= 0) {
+      setError("Price must be a valid positive number.");
+      return;
+    }
+
+    if (isNaN(product.stock) || product.stock < 0) {
+      setError("Stock must be a valid non-negative number.");
       return;
     }
 
@@ -77,7 +65,7 @@ const AddProducts = () => {
       });
 
       const res = await axios.post(
-        "http://localhost:3000/bluescope/products/create-new",
+        "https://bluescope-eotl.vercel.app/bluescope/products/create-new",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -147,7 +135,6 @@ const AddProducts = () => {
                   onChange={handleChange}
                   placeholder="Enter product description"
                   rows="4"
-                  required
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 ></textarea>
               </div>
@@ -156,20 +143,14 @@ const AddProducts = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Category
                 </label>
-                <select
+                <input
+                  type="text"
                   name="category"
                   value={product.category}
                   onChange={handleChange}
-                  required
+                  placeholder="Enter category"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                >
-                  <option value="">Select a Category</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
               <div>
@@ -194,10 +175,12 @@ const AddProducts = () => {
                   Price
                 </label>
                 <input
+                  type="number"
                   name="price"
                   value={product.price}
                   onChange={handleChange}
                   placeholder="Enter price"
+                  required
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 />
               </div>
@@ -212,6 +195,7 @@ const AddProducts = () => {
                   value={product.stock}
                   onChange={handleChange}
                   placeholder="Enter stock"
+                  required
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 />
               </div>
