@@ -157,6 +157,16 @@ const ProductManagement = () => {
                       {product.name}
                     </h3>
                     <div className="text-sm text-gray-600 space-y-1 mt-1">
+                      <p>
+                        Price: $
+                        {typeof product.price === "number"
+                          ? product.price.toFixed(2)
+                          : "N/A"}
+                      </p>
+                      <p>
+                        Stock:{" "}
+                        {product.stock ? product.stock.toFixed(0) : "N/A"} units
+                      </p>
                       {product.category && <p>Category: {product.category}</p>}
                     </div>
                   </div>
