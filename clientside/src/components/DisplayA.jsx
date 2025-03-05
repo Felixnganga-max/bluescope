@@ -11,7 +11,7 @@ const DisplayA = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/bluescope/products"
+          "https://bluescope-k9yt.vercel.app/bluescope/products"
         );
         const shuffledItems = response.data.sort(() => Math.random() - 0.5);
         setRandomItems(shuffledItems.slice(0, 10)); // ✅ Limit to 10 products

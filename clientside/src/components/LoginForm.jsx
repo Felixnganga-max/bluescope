@@ -32,7 +32,7 @@ const LoginForm = ({ onClose, onSignupClick }) => {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/bluescope/auth/login",
+        "https://bluescope-k9yt.vercel.app/bluescope/auth/login",
         {
           method: "POST",
           headers: {
@@ -54,7 +54,7 @@ const LoginForm = ({ onClose, onSignupClick }) => {
       localStorage.setItem("user", JSON.stringify(data.user));
 
       // Navigate to admin page
-      navigate("/admin");
+      navigate("/admin/product-management");
 
       // Close modal if provided
       onClose?.();

@@ -4,7 +4,7 @@ import AddProducts from "./AddProducts";
 import EditProducts from "./EditProducts";
 import toast, { Toaster } from "react-hot-toast";
 
-const API_URL = "http://localhost:3000/bluescope/products";
+const API_URL = "https://bluescope-k9yt.vercel.app/bluescope/products";
 
 const ProductManagement = () => {
   const [isAddMode, setIsAddMode] = useState(false);
