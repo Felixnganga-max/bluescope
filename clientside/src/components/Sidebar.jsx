@@ -209,7 +209,7 @@ const Sidebar = () => {
 
         try {
           const response = await axios.get(
-            "http://localhost:3000/bluescope/auth/current-user",
+            "https://bluescope-eotl.vercel.app/auth/current-user",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
