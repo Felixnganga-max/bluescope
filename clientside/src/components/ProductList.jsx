@@ -6,7 +6,9 @@ import {
   FaArrowRight,
   FaCompass,
   FaStar,
+  FaTimes,
 } from "react-icons/fa";
+
 import { IoGrid, IoApps, IoInfinite } from "react-icons/io5";
 import { HiOutlineSparkles } from "react-icons/hi";
 import {
@@ -24,8 +26,78 @@ const ProductList = () => {
   const [activeCategory, setActiveCategory] = useState(null);
   const [wishlist, setWishlist] = useState([]);
 
+  // Add these state variables at the component level
+  const [showCustomizationModal, setShowCustomizationModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedContactNumber, setSelectedContactNumber] = useState(null);
+  const [customizationData, setCustomizationData] = useState({
+    line1: "",
+    line2: "",
+    line3: "",
+  });
+
+  // Function to open the modal
+  const openCustomizationModal = (product, contactNumberObj) => {
+    setSelectedProduct(product);
+    setSelectedContactNumber(contactNumberObj);
+    setCustomizationData({
+      line1: "",
+      line2: "",
+      line3: "",
+    });
+    setShowCustomizationModal(true);
+  };
+
+  // Function to close the modal
+  const closeCustomizationModal = () => {
+    setShowCustomizationModal(false);
+  };
+
+  // Function to handle input changes
+  const handleCustomizationChange = (e) => {
+    const { name, value } = e.target;
+    setCustomizationData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Function to submit and go to WhatsApp
+  const submitCustomization = () => {
+    if (!selectedProduct || !selectedContactNumber) return;
+
+    const message = encodeURIComponent(
+      `Hello, I'm interested in customizing the ${selectedProduct.name} with you!
+    
+${selectedContactNumber.name}: ${customizationData.line1}
+Line 2: ${customizationData.line2}
+Line 3: ${customizationData.line3}`
+    );
+
+    window.open(
+      `https://wa.me/${selectedContactNumber.phoneNumber}?text=${message}`,
+      "_blank"
+    );
+    closeCustomizationModal();
+  };
   // Contact numbers for orders (shared across categories)
-  const contactNumbers = ["+254714952506", "+254712345678", "+254798765432"];
+  const contactNumbers = [
+    {
+      name: "Line 1",
+      phoneNumber: "+254714952506",
+      department: "For quotes and general inquiries",
+    },
+    {
+      name: "Line 2",
+      phoneNumber: "+254732917203",
+      department: "For existing orders and technical support",
+    },
+    {
+      name: "Line 3",
+      phoneNumber: "+254726705694",
+      department: "For existing orders and technical support",
+    },
+  ];
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -273,8 +345,9 @@ const ProductList = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                     {categoryProducts.map((product, index) => {
                       // Rotate through contact numbers for different products
-                      const whatsappNumber =
+                      const contactNumberObj =
                         contactNumbers[index % contactNumbers.length];
+                      const whatsappNumber = contactNumberObj.phoneNumber;
                       const message = encodeURIComponent(
                         `Hello, I'm interested in customizing the ${product.name} with you!`
                       );
@@ -368,24 +441,108 @@ const ProductList = () => {
                               </div>
                             )}
 
-                            {/* Contact Button */}
-                            <a
-                              href={whatsappLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            {/* Contact Button - changed to a button that opens the modal */}
+                            <button
+                              onClick={() =>
+                                openCustomizationModal(
+                                  product,
+                                  contactNumberObj
+                                )
+                              }
                               className="group/button block w-full relative overflow-hidden"
                             >
                               <div className="relative bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-center text-blue-50 text-sm font-medium py-2.5 px-4 rounded-lg transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-lg flex items-center justify-center gap-2">
-                                <span>Customize Design</span>
+                                <span>Get Your Customize Design</span>
                                 <FaArrowRight className="text-xs opacity-70 transition-transform duration-300 group-hover/button:translate-x-1" />
                               </div>
-                            </a>
+                            </button>
                           </div>
                         </div>
                       );
                     })}
                   </div>
 
+                  {/* Customization Modal - Add this outside the map function */}
+                  {showCustomizationModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-blue-950/80 backdrop-blur-sm">
+                      <div
+                        className="bg-gradient-to-b from-blue-900 to-blue-950 rounded-xl p-6 w-full max-w-md mx-4 border border-blue-700/30 shadow-xl"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-xl font-medium text-blue-100">
+                            Customize {selectedProduct?.name}
+                          </h3>
+                          <button
+                            onClick={closeCustomizationModal}
+                            className="text-blue-400 hover:text-blue-200 transition-colors"
+                          >
+                            <FaTimes />
+                          </button>
+                        </div>
+
+                        <div className="space-y-4 mb-6">
+                          <div>
+                            <label className="block text-blue-300 text-sm mb-1">
+                              {selectedContactNumber?.name || "Line 1"}
+                            </label>
+                            <input
+                              type="text"
+                              name="line1"
+                              value={customizationData.line1}
+                              onChange={handleCustomizationChange}
+                              className="w-full bg-blue-900/40 border border-blue-700/30 rounded-lg p-2 text-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                              placeholder="Enter your text for Line 1"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-blue-300 text-sm mb-1">
+                              Line 2
+                            </label>
+                            <input
+                              type="text"
+                              name="line2"
+                              value={customizationData.line2}
+                              onChange={handleCustomizationChange}
+                              className="w-full bg-blue-900/40 border border-blue-700/30 rounded-lg p-2 text-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                              placeholder="Enter your text for Line 2"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-blue-300 text-sm mb-1">
+                              Line 3
+                            </label>
+                            <input
+                              type="text"
+                              name="line3"
+                              value={customizationData.line3}
+                              onChange={handleCustomizationChange}
+                              className="w-full bg-blue-900/40 border border-blue-700/30 rounded-lg p-2 text-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                              placeholder="Enter your text for Line 3"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex gap-3">
+                          <button
+                            onClick={closeCustomizationModal}
+                            className="flex-1 border border-blue-600 text-blue-300 hover:text-blue-100 font-medium py-2 px-4 rounded-lg transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={submitCustomization}
+                            className="flex-1 bg-[#25d366] hover:from-blue-500 hover:to-indigo-500 text-blue-50 font-medium py-2 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+                          >
+                            <span>Continue to WhatsApp</span>
+                            <FaArrowRight className="text-xs" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   {/* Empty State */}
                   {categoryProducts.length === 0 && (
                     <div className="bg-blue-900/20 rounded-xl backdrop-blur-sm border border-blue-800/20 p-12 text-center">
@@ -438,7 +595,7 @@ const ProductList = () => {
                   full catalog.
                 </p>
                 <a
-                  href="/catalog"
+                  href="/catalogue"
                   className="block w-full bg-blue-800/50 hover:bg-blue-700/50 text-blue-100 text-center py-2.5 rounded-lg transition-all duration-300 border border-blue-700/30 text-sm font-medium flex items-center justify-center gap-2"
                 >
                   <span>View Full Catalog</span>
