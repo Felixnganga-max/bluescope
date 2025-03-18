@@ -299,7 +299,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button - Only on mobile */}
           <button
-            className="md:hidden text-gray-700 hover:text-blue-700 focus:outline-none"
+            className="md:hidden text-gray-700 mr-8 hover:text-blue-700 focus:outline-none"
             onClick={toggleMobileMenu}
             aria-label="Toggle mobile menu"
           >
@@ -325,7 +325,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Secondary Bar with Search and Login - Only shows on mobile */}
-        <div className="md:hidden mt-4 flex justify-between items-center">
+        <div className="md:hidden mt-4 w-100 flex justify-between items-center">
           {/* Search Bar - Mobile */}
           <div className="relative w-3/4" ref={searchRef}>
             <button
@@ -352,7 +352,10 @@ const Navbar = () => {
           </div>
 
           {/* Login Button - Mobile */}
-          <a href="#login" className="flex items-center justify-center group">
+          <a
+            href="#login"
+            className="flex items-center mr-5 justify-center group"
+          >
             <div className="flex flex-col items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
