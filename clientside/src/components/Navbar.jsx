@@ -325,7 +325,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Secondary Bar with Search and Login - Only shows on mobile */}
-        <div className="md:hidden mt-4 w-100 flex justify-between items-center">
+        <div className="md:hidden mt-4 w-60 flex justify-between items-center">
           {/* Search Bar - Mobile */}
           <div className="relative w-3/4" ref={searchRef}>
             <button
