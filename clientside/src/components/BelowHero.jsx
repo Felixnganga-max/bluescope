@@ -7,6 +7,7 @@ import {
   FaChevronRight,
 } from "react-icons/fa";
 import React, { useState, useEffect } from "react";
+import assets from "../assets/assets.js";
 
 export default function BelowHero() {
   const [hoveredFeature, setHoveredFeature] = useState(null);
@@ -173,19 +174,19 @@ export default function BelowHero() {
           </div>
           <div className="flex space-x-4">
             <img
-              src="/api/placeholder/100/30"
+              src={assets.lg}
               alt="Trusted Partner Logo"
-              className="h-6 opacity-60 hover:opacity-100 transition-opacity duration-300"
+              className="h-16 opacity-60 hover:opacity-100 transition-opacity duration-300"
             />
             <img
-              src="/api/placeholder/100/30"
+              src={assets.centonomy}
               alt="Trusted Partner Logo"
-              className="h-6 opacity-60 hover:opacity-100 transition-opacity duration-300"
+              className="h-10 opacity-60 mt-3 hover:opacity-100 transition-opacity duration-300"
             />
             <img
-              src="/api/placeholder/100/30"
+              src={assets.catholic}
               alt="Trusted Partner Logo"
-              className="h-6 opacity-60 hover:opacity-100 transition-opacity duration-300"
+              className="h-15 -mb-2 opacity-60 hover:opacity-100 transition-opacity duration-300"
             />
           </div>
         </div>

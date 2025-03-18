@@ -12,13 +12,18 @@ export default function Hero() {
   // WhatsApp contact details
   const whatsAppContacts = [
     {
-      name: "Sales Team",
-      phoneNumber: "+254797743366",
+      name: "Line 1",
+      phoneNumber: "+254714952506",
       department: "For quotes and general inquiries",
     },
     {
-      name: "Customer Support",
-      phoneNumber: "+254796843530",
+      name: "Line 2",
+      phoneNumber: "+254732917203",
+      department: "For existing orders and technical support",
+    },
+    {
+      name: "Line 3",
+      phoneNumber: "+254726705694",
       department: "For existing orders and technical support",
     },
   ];
@@ -27,24 +32,45 @@ export default function Hero() {
   const bannerData = [
     {
       id: 1,
-      image: assets.banner,
-      title: "Does Your Brand Need More Visibility?",
-      subtitle: "Professional Quality",
-      cta: "Get Started",
-    },
-    {
-      id: 2,
-      image: assets.banner2 || assets.banner, // Fallback if banner2 doesn't exist
-      title: "Transform Your Brand Identity",
-      subtitle: "Custom Solutions",
+      image: assets.sign1 || assets.banner, // Prioritizing signs, roll-ups, and banners
+      title: "Make a Bold Statement with Custom Signs!",
+      subtitle: "Eye-Catching Banners & Roll-Ups",
       cta: "Explore Options",
     },
     {
+      id: 2,
+      image: assets.banner,
+      title: "Maximize Your Brand’s Visibility!",
+      subtitle: "High-Quality Prints for Maximum Impact",
+      cta: "Get Started",
+    },
+    {
       id: 3,
-      image: assets.banner3 || assets.banner, // Fallback if banner3 doesn't exist
-      title: "Stand Out From The Competition",
-      subtitle: "Premium Services",
-      cta: "Learn More",
+      image: assets.displayBanner || assets.banner, // Hoodies & apparel printing
+      title: "Wear Your Brand with Confidence!",
+      subtitle: "Custom-Printed Hoodies & Apparel",
+      cta: "Shop Now",
+    },
+    {
+      id: 4,
+      image: assets.gift || assets.banner, // Gifts & promotional items
+      title: "Personalized Gifts That Leave an Impression",
+      subtitle: "Unique & Custom-Printed Merchandise",
+      cta: "Discover More",
+    },
+    {
+      id: 5,
+      image: assets.cups, // Mugs & cups
+      title: "Sip in Style with Custom Mugs!",
+      subtitle: "Professional-Quality Print on Drinkware",
+      cta: "Start Customizing",
+    },
+    {
+      id: 6,
+      image: assets.mockup || assets.banner, // Stationery, books, pens
+      title: "Elevate Your Brand with Custom Stationery",
+      subtitle: "Personalized Notebooks, Pens & More",
+      cta: "Design Yours",
     },
   ];
 
@@ -55,28 +81,25 @@ export default function Hero() {
       image: assets.notebook,
       title: "Custom Notebooks",
       subtitle: "Premium Collection",
-      description: "Perfect for corporate gifts and daily use",
-      badgeText: "NEW",
+      badgeText: "Advance your Branding",
       badgeColor: "bg-red-500",
       cta: "Request Sample",
     },
     {
       id: 2,
       image: assets.pen,
-      title: "Custom Apparel",
+      title: "Custom Printed Pens",
       subtitle: "Corporate Branding",
-      description: "High-quality custom printed t-shirts & polos",
-      badgeText: "FEATURED",
+      badgeText: "Brand with every written word",
       badgeColor: "bg-blue-500",
       cta: "Contact Us",
     },
     {
       id: 3,
       image: assets.carier,
-      title: "Large Format",
+      title: "Gift materials",
       subtitle: "Trade Show Ready",
-      description: "Banners, displays, and promotional materials",
-      badgeText: "POPULAR",
+      badgeText: "You don't just gift, you attach your brand with it",
       badgeColor: "bg-green-500",
       cta: "Get Quote",
     },
@@ -138,6 +161,20 @@ export default function Hero() {
       );
     }
   };
+
+  // Function to get a random banner index
+  const getRandomBannerIndex = () => {
+    return Math.floor(Math.random() * bannerData.length);
+  };
+
+  // Set up interval to change banner every 3 hours
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBannerIndex(getRandomBannerIndex());
+    }, 10000); // 1 hours in milliseconds
+
+    return () => clearInterval(interval); // Cleanup interval on component unmount
+  }, [bannerData.length]);
 
   // Print shop categories data structure
   const categories = [
@@ -235,10 +272,9 @@ export default function Hero() {
       setActiveCategory(null);
     }
   };
-
   return (
     <div
-      className={`flex flex-col mt-18 lg:flex-row gap-6 p-6 bg-gradient-to-br from-gray-50 to-gray-200 min-h-screen transition-opacity duration-1000 ${
+      className={`flex flex-col mt-30 md:mt-18 lg:flex-row gap-6 p-6 bg-gradient-to-br from-gray-50 to-gray-200 min-h-screen transition-opacity duration-1000 ${
         isLoaded ? "opacity-100" : "opacity-0"
       }`}
     >
@@ -379,38 +415,38 @@ export default function Hero() {
           <img
             src={bannerData[currentBannerIndex].image}
             alt="Main Banner"
-            className="w-full h-full object-cover rounded-lg transition-transform duration-700 group-hover:scale-105"
+            className="h-180 w-full md:h-[700px] object-cover rounded-lg transition-transform duration-700 group-hover:scale-105"
             style={{ objectPosition: "center" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/70 via-purple-800/40 to-transparent rounded-lg"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/70 via-purple-800/60 to-transparent rounded-lg"></div>
 
           {/* Banner content with enhanced styling */}
           <div className="absolute inset-0 flex flex-col justify-center items-start p-8 md:p-16 z-20 transition-all duration-500 transform group-hover:translate-y-[-8px]">
-            <div className="bg-purple-600/20 text-white text-xs uppercase tracking-widest py-1 px-3 rounded-full mb-4 backdrop-blur-sm">
+            <div className="bg-purple-600/30 text-white text-xs uppercase tracking-widest py-1 px-3 rounded-full mb-4 backdrop-blur-sm">
               {bannerData[currentBannerIndex].subtitle}
             </div>
-            <h2 className="text-white text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg">
+            <h2 className="text-white text-xl md:text-4xl font-bold mb-4 drop-shadow-lg">
               {bannerData[currentBannerIndex].title} <br />
               <span className="text-blue-500">Visibility?</span>
             </h2>
             <div className="text-white text-xl font-bold mb-6 max-w-md drop-shadow-md">
               <div className="bg-blue-900/30 backdrop-blur-sm rounded-xl p-5 border border-blue-500/30">
                 <p className="uppercase flex items-center mb-3">
-                  <span className="text-blue-500 mr-2 text-2xl">✓</span>
+                  <span className="text-blue-500 mr-2 text-xl">✓</span>
                   We{" "}
                   <span className="text-blue-500 ml-2 font-extrabold">
                     DESIGN
                   </span>
                 </p>
                 <p className="uppercase flex items-center mb-3">
-                  <span className="text-blue-500 mr-2 text-2xl">✓</span>
+                  <span className="text-blue-500 mr-2 text-xl">✓</span>
                   We{" "}
                   <span className="text-blue-500 ml-2 font-extrabold">
                     PRINT
                   </span>
                 </p>
                 <p className="uppercase flex items-center">
-                  <span className="text-blue-500 mr-2 text-2xl">✓</span>
+                  <span className="text-blue-500 mr-2 text-xl">✓</span>
                   We{" "}
                   <span className="text-blue-500 ml-2 font-extrabold">
                     BRAND
@@ -455,12 +491,12 @@ export default function Hero() {
           {/* Banner Navigation Arrows */}
           <button
             onClick={() => navigateBanner("prev")}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 backdrop-blur-sm text-white rounded-full p-3 shadow-lg transition-all duration-300 z-30"
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white rounded-full p-3 shadow-lg transition-all duration-300 z-30"
             aria-label="Previous banner"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
+              className="h-9 w-9"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -475,12 +511,12 @@ export default function Hero() {
           </button>
           <button
             onClick={() => navigateBanner("next")}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 backdrop-blur-sm text-white rounded-full p-3 shadow-lg transition-all duration-300 z-30"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white rounded-full p-3 shadow-lg transition-all duration-300 z-30"
             aria-label="Next banner"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
+              className="h-9 w-9"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -541,9 +577,6 @@ export default function Hero() {
                   {card.subtitle}
                 </div>
                 <h4 className="text-2xl font-bold mb-1">{card.title}</h4>
-                <p className="text-sm mb-3 max-w-xs opacity-90">
-                  {card.description}
-                </p>
               </div>
               <div>
                 <button

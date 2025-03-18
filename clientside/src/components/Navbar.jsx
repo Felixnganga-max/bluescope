@@ -102,10 +102,10 @@ const Navbar = () => {
               alt="BlueScope Logo"
             />
             <div className="flex flex-col">
-              <h1 className="font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-800 to-gray-800 text-2xl">
+              <h1 className="font-bold tracking-tight md:tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-800 to-gray-800 text-xl md:text-2xl">
                 BLUESCOPE
               </h1>
-              <p className="text-xs font-medium text-gray-500 tracking-widest">
+              <p className="text-xs font-medium text-gray-500 tracking-wide md:tracking-widest">
                 SUPPLIES LIMITED
               </p>
             </div>

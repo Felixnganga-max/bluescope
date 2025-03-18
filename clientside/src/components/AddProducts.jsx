@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { X, Loader2, CheckCircle, Package } from "lucide-react";
 
 const AddProducts = () => {
   // Comprehensive list of printing and related categories
@@ -40,6 +41,17 @@ const AddProducts = () => {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [loadingStage, setLoadingStage] = useState(0);
+
+  // Sweet loading messages for each stage
+  const loadingMessages = [
+    "Preparing your amazing product...",
+    "Packaging your creativity...",
+    "Adding a sprinkle of magic...",
+    "Almost there! Putting a bow on it...",
+    "Success! Your product is ready to shine!",
+  ];
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -57,6 +69,34 @@ const AddProducts = () => {
     }));
   };
 
+  const handleExit = () => {
+    // You can add navigation here if needed
+    // For now, we'll just show a confirmation dialog
+    if (
+      window.confirm(
+        "Are you sure you want to exit? Any unsaved changes will be lost."
+      )
+    ) {
+      // Navigate away or reset the form
+      setProduct({
+        name: "",
+        description: "",
+        category: "",
+        subcategory: "",
+        images: [],
+        price: "",
+        stock: "",
+        dimensions: "",
+        material: "",
+        customizable: false,
+        turnaround_time: "",
+      });
+
+      // You can add navigation here if needed
+      // Example: window.location.href = "/products";
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -67,6 +107,9 @@ const AddProducts = () => {
     }
 
     try {
+      setLoading(true);
+      setLoadingStage(0);
+
       const formData = new FormData();
       Object.keys(product).forEach((key) => {
         if (key === "images") {
@@ -76,11 +119,24 @@ const AddProducts = () => {
         }
       });
 
+      // Simulating multistage loading for a better user experience
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setLoadingStage(1);
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setLoadingStage(2);
+
       const res = await axios.post(
         "http://localhost:3000/bluescope/products/create-new",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
+
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      setLoadingStage(3);
+
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      setLoadingStage(4);
 
       setSuccess("Product added successfully!");
       setError("");
@@ -97,14 +153,69 @@ const AddProducts = () => {
         customizable: false,
         turnaround_time: "",
       });
+
+      // Reset loading after showing success
+      setTimeout(() => {
+        setLoading(false);
+      }, 1500);
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
       setSuccess("");
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8 relative">
+      {/* Exit Button */}
+      <button
+        onClick={handleExit}
+        className="absolute top-6 right-6 md:top-10 md:right-10 bg-white text-gray-600 p-2 rounded-full hover:bg-gray-200 transition-all shadow-md z-10"
+        aria-label="Exit"
+      >
+        <X size={24} />
+      </button>
+
+      {/* Loading Overlay */}
+      {loading && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-8 max-w-md w-full shadow-2xl transform transition-all animate-fade-in">
+            <div className="text-center">
+              {loadingStage < 4 ? (
+                <div className="inline-flex items-center justify-center w-20 h-20 mb-6 relative">
+                  <Loader2 size={48} className="text-blue-600 animate-spin" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Package size={20} className="text-blue-800" />
+                  </div>
+                </div>
+              ) : (
+                <CheckCircle
+                  size={72}
+                  className="text-green-500 mx-auto mb-6 animate-bounce"
+                />
+              )}
+
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {loadingMessages[loadingStage]}
+              </h3>
+
+              <div className="w-full bg-gray-200 rounded-full h-1.5 mb-6 mt-6">
+                <div
+                  className="bg-blue-600 h-1.5 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${(loadingStage + 1) * 20}%` }}
+                ></div>
+              </div>
+
+              <p className="text-gray-500 text-sm">
+                {loadingStage < 4
+                  ? "Please wait while we process your product..."
+                  : "Your product has been added successfully!"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
           Add Product
@@ -314,9 +425,21 @@ const AddProducts = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
+            disabled={loading}
+            className={`w-full text-white p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all flex items-center justify-center ${
+              loading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
           >
-            Add Product
+            {loading ? (
+              <>
+                <Loader2 size={20} className="animate-spin mr-2" />
+                Processing...
+              </>
+            ) : (
+              "Add Product"
+            )}
           </button>
         </form>
       </div>

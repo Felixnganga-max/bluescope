@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { X, Save, Loader2, ShoppingBag, Check } from "lucide-react";
 
 const EditProducts = ({ product, onClose, onProductUpdated }) => {
   const [editedProduct, setEditedProduct] = useState({
@@ -19,6 +20,18 @@ const EditProducts = ({ product, onClose, onProductUpdated }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [existingImages, setExistingImages] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
+
+  // Loading messages array
+  const loadingMessages = [
+    "Polishing your product details...",
+    "Adding that special shine to your inventory...",
+    "Preparing your product for the spotlight...",
+    "Making your product look its best...",
+    "Updating your amazing product...",
+    "Refreshing your inventory with style...",
+  ];
 
   // Populate form with existing product data when component mounts
   useEffect(() => {
@@ -39,6 +52,20 @@ const EditProducts = ({ product, onClose, onProductUpdated }) => {
       setExistingImages(Array.isArray(product.images) ? product.images : []);
     }
   }, [product]);
+
+  // Cycle through loading messages during submission
+  useEffect(() => {
+    let messageInterval;
+    if (isSubmitting) {
+      let index = 0;
+      setLoadingMessage(loadingMessages[0]);
+      messageInterval = setInterval(() => {
+        index = (index + 1) % loadingMessages.length;
+        setLoadingMessage(loadingMessages[index]);
+      }, 2000);
+    }
+    return () => clearInterval(messageInterval);
+  }, [isSubmitting]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -72,8 +99,8 @@ const EditProducts = ({ product, onClose, onProductUpdated }) => {
     e.preventDefault();
 
     // Validation checks
-    if (!editedProduct.name || !editedProduct.price || !editedProduct.stock) {
-      setError("Name, price, and stock are required.");
+    if (!editedProduct.name || !editedProduct.stock) {
+      setError("Name and stock are required.");
       return;
     }
 
@@ -86,6 +113,9 @@ const EditProducts = ({ product, onClose, onProductUpdated }) => {
       setError("Stock must be a valid non-negative number.");
       return;
     }
+
+    setIsSubmitting(true);
+    setError("");
 
     try {
       const formData = new FormData();
@@ -104,6 +134,9 @@ const EditProducts = ({ product, onClose, onProductUpdated }) => {
         formData.append("existingImages", imageUrl)
       );
 
+      // Simulate a longer process to show the loading animation
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       const res = await axios.put(
         `https://bluescope-eotl.vercel.app/bluescope/products/${product._id}`,
         formData,
@@ -111,32 +144,66 @@ const EditProducts = ({ product, onClose, onProductUpdated }) => {
       );
 
       setSuccess("Product updated successfully!");
-      setError("");
-      onProductUpdated();
-      onClose();
+
+      // Show success for a brief moment before closing
+      setTimeout(() => {
+        setIsSubmitting(false);
+        onProductUpdated();
+        onClose();
+      }, 1500);
     } catch (err) {
+      setIsSubmitting(false);
       setError(err.response?.data?.message || "Something went wrong");
       setSuccess("");
     }
   };
 
+  // Loading overlay
+  const LoadingOverlay = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-8 rounded-xl shadow-2xl flex flex-col items-center max-w-md w-full">
+        <div className="mb-6 relative">
+          <div className="animate-ping absolute inline-flex h-16 w-16 rounded-full bg-blue-400 opacity-75"></div>
+          <ShoppingBag className="relative text-blue-600 animate-bounce h-16 w-16" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-800 mb-2">
+          {success ? "Success!" : loadingMessage}
+        </h3>
+        {success ? (
+          <div className="flex items-center text-green-600">
+            <Check className="mr-2" />
+            <span>{success}</span>
+          </div>
+        ) : (
+          <div className="flex items-center mt-2">
+            <Loader2 className="animate-spin mr-2 text-blue-600" />
+            <span className="text-gray-600">Please wait a moment...</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+      {isSubmitting && <LoadingOverlay />}
+
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl font-bold text-gray-800">Edit Product</h2>
           <button
             onClick={onClose}
             className="text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full p-2 transition-colors"
+            aria-label="Close"
           >
-            ✕
+            <X className="h-6 w-6" />
           </button>
         </div>
 
         {error && (
           <p className="text-red-500 bg-red-100 p-3 rounded-lg mb-6">{error}</p>
         )}
-        {success && (
+        {success && !isSubmitting && (
           <p className="text-green-500 bg-green-100 p-3 rounded-lg mb-6">
             {success}
           </p>
@@ -322,7 +389,7 @@ const EditProducts = ({ product, onClose, onProductUpdated }) => {
                       onClick={() => removeImage(index, true)}
                       className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-all"
                     >
-                      ✕
+                      <X className="h-4 w-4" />
                     </button>
                   </div>
                 ))}
@@ -339,7 +406,7 @@ const EditProducts = ({ product, onClose, onProductUpdated }) => {
                   >
                     <img
                       src={URL.createObjectURL(image)}
-                      alt={`Preview ${index}`}
+                      alt={`Uploaded ${index}`}
                       className="w-full h-24 object-cover rounded-lg transform group-hover:scale-105 transition-all"
                     />
                     <button
@@ -347,7 +414,7 @@ const EditProducts = ({ product, onClose, onProductUpdated }) => {
                       onClick={() => removeImage(index)}
                       className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-all"
                     >
-                      ✕
+                      <X className="h-4 w-4" />
                     </button>
                   </div>
                 ))}
@@ -356,12 +423,25 @@ const EditProducts = ({ product, onClose, onProductUpdated }) => {
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
-          >
-            Update Product
-          </button>
+          <div className="flex justify-end mt-8">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="animate-spin mr-2 h-5 w-5" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-5 w-5" />
+                  Update Product
+                </>
+              )}
+            </button>
+          </div>
         </form>
       </div>
     </div>

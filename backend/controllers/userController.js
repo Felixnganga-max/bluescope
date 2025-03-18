@@ -272,6 +272,120 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
+// NEW FUNCTIONS FOR USER MANAGEMENT
+
+// Get All Users
+const getAllUsers = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "No token provided",
+      });
+    }
+
+    // Verify token and get user role
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const currentUser = await Person.findById(decoded.userId);
+
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Check if user is admin
+    if (currentUser.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Permission denied. Admin access required.",
+      });
+    }
+
+    // Get all users except password field
+    const users = await Person.find().select("-password");
+
+    res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    console.error("Get all users error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Delete User
+const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "No token provided",
+      });
+    }
+
+    // Verify token and get user role
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const currentUser = await Person.findById(decoded.userId);
+
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Check if user is admin
+    if (currentUser.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Permission denied. Admin access required.",
+      });
+    }
+
+    // Check if trying to delete self
+    if (userId === currentUser._id.toString()) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot delete your own account",
+      });
+    }
+
+    // Find and delete user
+    const userToDelete = await Person.findById(userId);
+
+    if (!userToDelete) {
+      return res.status(404).json({
+        success: false,
+        message: "User to delete not found",
+      });
+    }
+
+    await Person.findByIdAndDelete(userId);
+
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 // Export the functions
 module.exports = {
   signup,
@@ -280,4 +394,6 @@ module.exports = {
   logout,
   verifyToken,
   getCurrentUser,
+  getAllUsers,
+  deleteUser,
 };
