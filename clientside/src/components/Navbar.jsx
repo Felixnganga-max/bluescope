@@ -87,7 +87,7 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main navbar section */}
-        <div className="flex justify-between items-center">
+        <div className="flex cursor-pointer justify-between items-center">
           {/* Logo - On all screens */}
           <div
             className="flex items-center space-x-3 md:space-x-3"
@@ -122,7 +122,7 @@ const Navbar = () => {
           {/* Navigation - Desktop Only */}
           <nav className="hidden md:flex items-center">
             <ul className="flex space-x-8">
-              {["About Us", "Services", "Catalogue", "Contact Us"].map(
+              {["Catalogue", "Services", "About Us", "Contact Us"].map(
                 (item, index) => (
                   <li key={index}>
                     <a
@@ -469,7 +469,7 @@ const Navbar = () => {
           <div className="md:hidden mt-2 bg-white rounded-xl shadow-lg overflow-hidden">
             <nav className="py-2">
               <ul className="flex flex-col">
-                {["About Us", "Services", "Catalogue", "Contact Us"].map(
+                {["Catalogue", "Services", "About Us", "Contact Us"].map(
                   (item, index) => (
                     <li key={index}>
                       <a

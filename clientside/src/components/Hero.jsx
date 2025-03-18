@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import assets from "../assets/assets.js";
+import { useNavigate } from "react-router-dom";
 
 export default function Hero() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -8,6 +9,8 @@ export default function Hero() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+
+  const navigate = useNavigate(); // Call the hook at the top level
 
   // WhatsApp contact details
   const whatsAppContacts = [
@@ -313,15 +316,24 @@ export default function Hero() {
             </button>
           </div>
           <ul className="space-y-1">
-            <li className="font-medium cursor-pointer hover:text-blue-600 transition-colors duration-200 py-3 px-2 border-b border-gray-100 flex items-center rounded-lg hover:bg-blue-50">
+            <li
+              className="font-medium cursor-pointer hover:text-blue-600 transition-colors duration-200 py-3 px-2 border-b border-gray-100 flex items-center rounded-lg hover:bg-blue-50"
+              onClick={() => navigate("/catalogue")}
+            >
               <span className="mr-2 text-blue-500">🔍</span>
               All Print Products
             </li>
-            <li className="text-red-500 font-medium cursor-pointer hover:text-red-700 transition-colors duration-200 py-3 px-2 border-b border-gray-100 flex items-center rounded-lg hover:bg-red-50">
+            <li
+              className="text-red-500 font-medium cursor-pointer hover:text-red-700 transition-colors duration-200 py-3 px-2 border-b border-gray-100 flex items-center rounded-lg hover:bg-red-50"
+              onClick={() => navigate("/catalogue")}
+            >
               <span className="mr-2">🔥</span>
               Best Selling Items
             </li>
-            <li className="text-green-600 font-medium cursor-pointer hover:text-green-800 transition-colors duration-200 py-3 px-2 border-b border-gray-100 flex items-center rounded-lg hover:bg-green-50">
+            <li
+              className="text-green-600 font-medium cursor-pointer hover:text-green-800 transition-colors duration-200 py-3 px-2 border-b border-gray-100 flex items-center rounded-lg hover:bg-green-50"
+              onClick={() => navigate("/catalogue")}
+            >
               <span className="mr-2">💰</span>
               Weekly Specials
             </li>
@@ -333,7 +345,7 @@ export default function Hero() {
                 className="relative py-3 px-2 border-b border-gray-100 cursor-pointer hover:bg-gray-50 rounded-lg transition-all duration-200"
                 onMouseEnter={() => handleCategoryHover(index)}
                 onMouseLeave={handleCategoryLeave}
-                onClick={() => handleCategoryClick(index)}
+                onClick={() => navigate("/catalogue")}
               >
                 <div className="flex justify-between items-center hover:text-blue-600 transition-colors duration-200">
                   <span className="flex items-center">
@@ -349,38 +361,22 @@ export default function Hero() {
                   </span>
                 </div>
 
-                {/* Subcategories dropdown - Desktop (right side) and Mobile (overlay) */}
+                {/* Subcategories dropdown */}
                 {activeCategory === index && (
-                  <ul
-                    className={`lg:absolute lg:left-full lg:top-0 lg:ml-4 w-56 bg-white shadow-2xl rounded-lg border border-gray-200 z-50 py-3 animate-fadeIn ${
-                      window.innerWidth < 1024 ? "mt-2" : ""
-                    }`}
-                    style={{
-                      boxShadow:
-                        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                    }}
-                  >
-                    <div className="lg:absolute lg:left-0 lg:top-4 lg:transform lg:-translate-x-2 lg:w-3 lg:h-3 lg:rotate-45 lg:bg-white lg:border-l lg:border-t lg:border-gray-200"></div>
+                  <ul className="lg:absolute lg:left-full lg:top-0 lg:ml-4 w-56 bg-white shadow-2xl rounded-lg border border-gray-200 z-50 py-3 animate-fadeIn">
                     <div className="px-3 mb-2 text-sm font-semibold text-gray-500 border-b pb-2">
                       {category.name}
                     </div>
                     {category.subcategories.map((subcat, subIndex) => (
                       <li
                         key={subIndex}
-                        className="px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 flex items-center"
+                        className="px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 flex items-center cursor-pointer"
+                        onClick={() => navigate("/catalogue")}
                       >
                         <span className="w-1 h-1 bg-gray-300 rounded-full mr-2"></span>
                         {subcat}
                       </li>
                     ))}
-                    <div className="mt-2 px-4 pt-2 border-t">
-                      <button
-                        className="text-blue-600 text-sm hover:text-blue-800 transition-colors"
-                        onClick={handleWhatsAppClick}
-                      >
-                        View All {category.name} →
-                      </button>
-                    </div>
                   </ul>
                 )}
               </li>
@@ -457,7 +453,7 @@ export default function Hero() {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 className="bg-purple-600 text-white py-3 px-8 rounded-lg hover:bg-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
-                onClick={handleWhatsAppClick}
+                onClick={() => navigate("/catalogue")}
               >
                 <span>{bannerData[currentBannerIndex].cta}</span>
                 <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">
