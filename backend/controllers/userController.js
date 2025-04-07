@@ -1,19 +1,23 @@
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const {
-  sendVerificationEmail,
-  sendWelcomeEmail,
-} = require("../mailtrap/emails");
 const Person = require("../models/userModel");
 
-// Generate Token Function (replaces generateTokenAndSetCookie)
+/**
+ * Generate JWT token for authentication
+ * @param {string} userId - User ID to encode in the token
+ * @returns {string} JWT token
+ */
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
 };
 
-// User Signup
+/**
+ * User Signup - Create a new user without any email verification
+ * @param {Object} req - Request object containing user details
+ * @param {Object} res - Response object
+ */
 const signup = async (req, res) => {
   const { email, password, name, role } = req.body;
 
@@ -41,32 +45,23 @@ const signup = async (req, res) => {
     const salt = await bcryptjs.genSalt(12);
     const hashedPassword = await bcryptjs.hash(password, salt);
 
-    // Generate verification token
-    const verificationToken = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString();
-
     // Create user with trimmed email address to avoid whitespace issues
     const user = new Person({
       email: email.trim().toLowerCase(),
       password: hashedPassword,
       name: name.trim(),
-      role,
-      verificationToken,
-      verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+      role: role || "user", // Default to 'user' if role not specified
+      isVerified: true, // Set user as verified by default - no verification needed
     });
 
     await user.save();
-
-    // Send verification email
-    await sendVerificationEmail(user.email, verificationToken);
 
     // Generate JWT token
     const token = generateToken(user._id);
 
     res.status(201).json({
       success: true,
-      message: "User registered successfully. Please verify your email.",
+      message: "User registered successfully",
       token,
       user: { ...user._doc, password: undefined },
     });
@@ -76,51 +71,11 @@ const signup = async (req, res) => {
   }
 };
 
-// Verify Email
-const verifyEmail = async (req, res) => {
-  const { code } = req.body;
-
-  try {
-    if (!code) {
-      return res.status(400).json({
-        success: false,
-        message: "Verification code is required",
-      });
-    }
-
-    const user = await Person.findOne({
-      verificationToken: code,
-      verificationTokenExpiresAt: { $gt: Date.now() },
-    });
-
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired verification token",
-      });
-    }
-
-    user.isVerified = true;
-    user.verificationToken = undefined;
-    user.verificationTokenExpiresAt = undefined;
-
-    await user.save();
-
-    // Send welcome email
-    await sendWelcomeEmail(user.email, user.name);
-
-    res.status(200).json({
-      success: true,
-      message: "Email successfully verified",
-      user: { ...user._doc, password: undefined },
-    });
-  } catch (error) {
-    console.error("Email verification error:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// Login User
+/**
+ * Login User
+ * @param {Object} req - Request object containing login credentials
+ * @param {Object} res - Response object
+ */
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -156,14 +111,6 @@ const login = async (req, res) => {
         .json({ success: false, message: "Invalid email or password" });
     }
 
-    // Check if email is verified
-    if (!user.isVerified) {
-      return res.status(400).json({
-        success: false,
-        message: "Please verify your email before logging in",
-      });
-    }
-
     // Generate JWT token
     const token = generateToken(user._id);
 
@@ -183,7 +130,11 @@ const login = async (req, res) => {
   }
 };
 
-// Logout User
+/**
+ * Logout User
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ */
 const logout = (req, res) => {
   try {
     // No need to clear cookies, as we're using localStorage
@@ -197,7 +148,11 @@ const logout = (req, res) => {
   }
 };
 
-// Verify Token
+/**
+ * Verify Token - Validate a token and return user info
+ * @param {Object} req - Request object with token in headers
+ * @param {Object} res - Response object
+ */
 const verifyToken = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
@@ -240,7 +195,11 @@ const verifyToken = async (req, res) => {
   }
 };
 
-// Get Current User
+/**
+ * Get Current User - Return authenticated user's data
+ * @param {Object} req - Request object with token in headers
+ * @param {Object} res - Response object
+ */
 const getCurrentUser = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
@@ -272,9 +231,11 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
-// NEW FUNCTIONS FOR USER MANAGEMENT
-
-// Get All Users
+/**
+ * Get All Users - Admin only function
+ * @param {Object} req - Request object with token in headers
+ * @param {Object} res - Response object
+ */
 const getAllUsers = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
@@ -321,7 +282,11 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// Delete User
+/**
+ * Delete User - Admin only function
+ * @param {Object} req - Request object with token in headers and userId in params
+ * @param {Object} res - Response object
+ */
 const deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -389,7 +354,6 @@ const deleteUser = async (req, res) => {
 // Export the functions
 module.exports = {
   signup,
-  verifyEmail,
   login,
   logout,
   verifyToken,

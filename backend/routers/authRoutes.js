@@ -4,7 +4,7 @@ const {
   login,
   logout,
   getCurrentUser,
-  verifyEmail,
+  // verifyEmail,
   getAllUsers,
   deleteUser,
 } = require("../controllers/userController.js");
@@ -15,7 +15,6 @@ const router = express.Router();
 router.post("/sign-up", signup); // ✅ Ensure this line is present
 router.post("/login", login);
 router.post("/logout", logout);
-router.post("/verify-email", verifyEmail);
 router.get("/current-user", getCurrentUser);
 
 router.get("/all-users", getAllUsers);

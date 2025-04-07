@@ -196,10 +196,16 @@ const Sidebar = () => {
 
   useEffect(() => {
     const getUserDataFromToken = async () => {
+      console.log("🔍 Starting to fetch user data");
       try {
         const token = localStorage.getItem("token");
+        console.log(
+          "📝 Token retrieved:",
+          token ? "Token exists" : "No token found"
+        );
 
         if (!token) {
+          console.log("⚠️ No token found in localStorage");
           setUserData({
             name: "Not Logged In",
             role: "Guest",
@@ -208,8 +214,14 @@ const Sidebar = () => {
         }
 
         try {
+          console.log("🔄 Making API request to fetch current user");
+          console.log(
+            "🌐 API URL:",
+            "https://bluescope-eotl.vercel.app/bluescope/auth/current-user"
+          );
+
           const response = await axios.get(
-            "https://bluescope-eotl.vercel.app/auth/current-user",
+            "https://bluescope-eotl.vercel.app/bluescope/auth/current-user",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -218,42 +230,64 @@ const Sidebar = () => {
             }
           );
 
-          console.log("Current User Response:", response.data);
+          console.log("✅ API Response received:", response);
+          console.log("📊 Response data:", response.data);
+          console.log("🔑 Success flag:", response.data.success);
+          console.log("👤 User data:", response.data.user);
 
           if (response.data.success && response.data.user) {
             const user = response.data.user;
+            console.log("💾 Setting user data with:", {
+              name: user.name || "Unknown User",
+              role: user.role || "Unknown Role",
+            });
+
             setUserData({
               name: user.name || "Unknown User",
               role: user.role || "Unknown Role",
             });
           } else {
+            console.log("❌ Invalid response format or unsuccessful response");
             setUserData({
               name: "Invalid Token",
               role: "Access Denied",
             });
           }
         } catch (error) {
-          console.error("Detailed Error:", error);
+          console.error("❗ API Error:", error);
 
-          if (error.code === "ECONNABORTED") {
-            setUserData({
-              name: "Connection Timeout",
-              role: "Check server connection",
-            });
-          } else if (error.response) {
+          if (error.response) {
             // The request was made and the server responded with a status code
+            console.error(
+              "📡 Server responded with status:",
+              error.response.status
+            );
+            console.error("📡 Response data:", error.response.data);
+            console.error("📡 Response headers:", error.response.headers);
+
             setUserData({
               name: "Server Error",
               role: error.response.status.toString(),
             });
           } else if (error.request) {
             // The request was made but no response was received
+            console.error("📡 No response received:", error.request);
+
             setUserData({
               name: "No Server Response",
               role: "Check backend server",
             });
+          } else if (error.code === "ECONNABORTED") {
+            console.error("⏱️ Request timeout:", error.message);
+
+            setUserData({
+              name: "Connection Timeout",
+              role: "Check server connection",
+            });
           } else {
             // Something happened in setting up the request
+            console.error("🔌 Network Error:", error.message);
+
             setUserData({
               name: "Network Error",
               role: "Unable to connect",
@@ -261,7 +295,7 @@ const Sidebar = () => {
           }
         }
       } catch (error) {
-        console.error("Token Error:", error);
+        console.error("🔒 Token handling error:", error);
         setUserData({
           name: "Authentication Error",
           role: "Please log in again",
@@ -288,9 +322,12 @@ const Sidebar = () => {
   }, []);
 
   const handleLogout = () => {
+    console.log("🚪 Logout clicked, removing token");
     // Implement logout functionality
     localStorage.removeItem("token");
+    console.log("🔑 Token removed from localStorage");
     // Redirect to login page or home
+    console.log("🔄 Redirecting to home page");
     window.location.href = "/";
   };
 
@@ -302,13 +339,13 @@ const Sidebar = () => {
       color: "from-red-400 to-red-600",
     },
     {
-      path: "/admin/sales-management",
+      path: "#",
       label: "Sales Management",
       icon: <Icons.SalesIcon />,
       color: "from-blue-400 to-blue-600",
     },
     {
-      path: "/admin/inventory-management",
+      path: "#",
       label: "Inventory Management",
       icon: <Icons.InventoryIcon />,
       color: "from-gray-400 to-gray-600",
@@ -320,7 +357,7 @@ const Sidebar = () => {
       color: "from-red-400 to-red-600",
     },
     {
-      path: "/admin/ui",
+      path: "#",
       label: "User Interface",
       icon: <Icons.UIIcon />,
       color: "from-purple-400 to-purple-600",
@@ -332,14 +369,22 @@ const Sidebar = () => {
       color: "from-blue-400 to-blue-600",
     },
     {
-      path: "/admin/profile",
+      path: "#",
       label: "Profile",
       icon: <Icons.ProfileIcon />,
       color: "from-gray-400 to-gray-600",
     },
   ];
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => {
+    const active = location.pathname === path;
+    console.log(`📍 Menu item ${path}: ${active ? "active" : "inactive"}`);
+    return active;
+  };
+
+  console.log("🖥️ Rendering Sidebar with user:", userData);
+  console.log("📊 Current window width:", windowWidth);
+  console.log("🔍 Sidebar collapsed:", collapsed);
 
   return (
     <div
@@ -383,7 +428,10 @@ const Sidebar = () => {
       {/* Collapse button - only show on larger screens */}
       {windowWidth >= 768 && (
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={() => {
+            console.log("🔄 Toggling sidebar collapse state");
+            setCollapsed(!collapsed);
+          }}
           className="absolute -right-3 top-32 bg-gradient-to-r from-red-500 to-blue-500 rounded-full p-1 shadow-lg hover:from-red-600 hover:to-blue-600 transition-all z-50"
           style={{
             boxShadow:
@@ -482,6 +530,11 @@ const Sidebar = () => {
                     ? "bg-gradient-to-r from-gray-800/90 to-gray-900/90 text-white shadow-lg border-l-4 border-l-red-500"
                     : "hover:bg-gray-800/40 text-gray-300"
                 } ${collapsed ? "justify-center p-3" : "p-3"}`}
+                onClick={() => {
+                  console.log(
+                    `🔗 Clicked menu item: ${item.label}, path: ${item.path}`
+                  );
+                }}
               >
                 <div
                   className={`relative flex-shrink-0 p-1 rounded-lg ${

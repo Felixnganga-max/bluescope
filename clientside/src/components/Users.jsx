@@ -12,6 +12,7 @@ const Users = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [creatingUser, setCreatingUser] = useState(false);
 
   // Form states
   const [newUser, setNewUser] = useState({
@@ -80,7 +81,6 @@ const Users = () => {
     try {
       setLoading(true);
 
-      // FIXED: Change endpoint to fetch all users instead of current-user
       const response = await axios.get(
         "http://localhost:3000/bluescope/auth/all-users",
         {
@@ -91,7 +91,6 @@ const Users = () => {
       );
 
       if (response.data.success) {
-        // FIXED: Make sure we're accessing the correct property from the response
         setUsers(response.data.users || []);
       } else {
         setError("Failed to fetch users");
@@ -157,10 +156,12 @@ const Users = () => {
     }
 
     try {
+      setCreatingUser(true);
       const token = localStorage.getItem("token");
 
+      // Use the sign-up endpoint as specified
       const response = await axios.post(
-        "http://localhost:3000/bluescope/users/create",
+        "http://localhost:3000/bluescope/auth/sign-up",
         newUser,
         {
           headers: {
@@ -206,6 +207,8 @@ const Users = () => {
       } else {
         setFormErrors({ general: "Failed to create user. Please try again." });
       }
+    } finally {
+      setCreatingUser(false);
     }
   };
 
@@ -217,7 +220,7 @@ const Users = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.delete(
-        `http://localhost:3000/bluescope/users/${userToDelete._id}`,
+        `http://localhost:3000/bluescope/users/${userToDelete.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -241,7 +244,7 @@ const Users = () => {
     }
   };
 
-  // FIXED: Added null check before filtering
+  // Filter users
   const filteredUsers =
     users && users.length > 0
       ? users.filter(
@@ -252,14 +255,61 @@ const Users = () => {
         )
       : [];
 
+  // Get role badge color
+  const getRoleBadgeColor = (role) => {
+    switch (role) {
+      case "admin":
+        return "bg-purple-100 text-purple-800";
+      case "reception":
+        return "bg-green-100 text-green-800";
+      default:
+        return "bg-blue-100 text-blue-800";
+    }
+  };
+
+  // Loading component with rotating shapes
+  const LoadingSpinner = () => (
+    <div className="flex flex-col items-center justify-center py-12">
+      <div className="relative w-24 h-24">
+        {/* Rotating square */}
+        <div className="absolute inset-0 animate-spin">
+          <div className="w-16 h-16 rounded-md bg-gradient-to-r from-blue-400 to-indigo-500 opacity-70 mx-auto"></div>
+        </div>
+        {/* Rotating circle */}
+        <div
+          className="absolute inset-0 animate-spin"
+          style={{ animationDuration: "3s" }}
+        >
+          <div className="w-20 h-20 rounded-full border-4 border-green-400 opacity-70 mx-auto"></div>
+        </div>
+        {/* Rotating triangle */}
+        <div
+          className="absolute inset-0 animate-spin"
+          style={{ animationDuration: "4s", animationDirection: "reverse" }}
+        >
+          <div
+            className="w-0 h-0 mx-auto"
+            style={{
+              borderLeft: "12px solid transparent",
+              borderRight: "12px solid transparent",
+              borderBottom: "24px solid rgba(236, 72, 153, 0.7)",
+              marginTop: "10px",
+            }}
+          ></div>
+        </div>
+      </div>
+      <p className="mt-6 text-gray-600 font-medium animate-pulse">
+        Crafting digital magic...
+      </p>
+      <p className="text-gray-500 text-sm mt-2">Please wait a moment</p>
+    </div>
+  );
+
   // If still checking authorization
   if (loading && !isAuthorized) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Checking authorization...</p>
-        </div>
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <LoadingSpinner />
       </div>
     );
   }
@@ -267,7 +317,7 @@ const Users = () => {
   // If not authorized
   if (!isAuthorized) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-gray-50">
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md max-w-lg">
           <div className="flex items-center">
             <svg
@@ -365,10 +415,7 @@ const Users = () => {
       {/* Users Table */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         {loading ? (
-          <div className="text-center py-12">
-            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading users...</p>
-          </div>
+          <LoadingSpinner />
         ) : error ? (
           <div className="text-center py-12">
             <svg
@@ -442,10 +489,17 @@ const Users = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredUsers.map((user) => (
-                <tr key={user._id}>
+                <tr
+                  key={user._id}
+                  className="hover:bg-gray-50 transition-colors duration-150"
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      {/*  */}
+                      <div className="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-200 to-indigo-300 rounded-full flex items-center justify-center">
+                        <span className="font-medium text-indigo-800">
+                          {user.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
                           {user.name}
@@ -458,11 +512,9 @@ const Users = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        user.role === "admin"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
+                      className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeColor(
+                        user.role
+                      )}`}
                     >
                       {user.role}
                     </span>
@@ -473,7 +525,7 @@ const Users = () => {
                         setUserToDelete(user);
                         setShowDeleteModal(true);
                       }}
-                      className="text-red-600 hover:text-red-900"
+                      className="text-red-600 hover:text-red-900 transition-colors duration-150"
                     >
                       Delete
                     </button>
@@ -487,19 +539,24 @@ const Users = () => {
 
       {/* Create User Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-            <div className="p-6">
-              <h3 className="text-lg font-medium text-gray-900">
-                Create New User
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md transform transition-all">
+            <div className="relative p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-1">
+                Create New Staff Account
               </h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Create admin or reception staff accounts. Regular users will
+                sign up directly.
+              </p>
+
               <form onSubmit={handleCreateUser} className="mt-4 space-y-4">
                 <div>
                   <label
                     htmlFor="name"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Name
+                    Full Name
                   </label>
                   <input
                     type="text"
@@ -508,9 +565,10 @@ const Users = () => {
                     value={newUser.name}
                     onChange={handleInputChange}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Enter full name"
                   />
                   {formErrors.name && (
-                    <p className="mt-2 text-sm text-red-600">
+                    <p className="mt-1 text-sm text-red-600">
                       {formErrors.name}
                     </p>
                   )}
@@ -520,7 +578,7 @@ const Users = () => {
                     htmlFor="email"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Email
+                    Email Address
                   </label>
                   <input
                     type="email"
@@ -529,9 +587,10 @@ const Users = () => {
                     value={newUser.email}
                     onChange={handleInputChange}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="staff@example.com"
                   />
                   {formErrors.email && (
-                    <p className="mt-2 text-sm text-red-600">
+                    <p className="mt-1 text-sm text-red-600">
                       {formErrors.email}
                     </p>
                   )}
@@ -550,9 +609,10 @@ const Users = () => {
                     value={newUser.password}
                     onChange={handleInputChange}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Minimum 6 characters"
                   />
                   {formErrors.password && (
-                    <p className="mt-2 text-sm text-red-600">
+                    <p className="mt-1 text-sm text-red-600">
                       {formErrors.password}
                     </p>
                   )}
@@ -562,7 +622,7 @@ const Users = () => {
                     htmlFor="role"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Role
+                    Staff Role
                   </label>
                   <select
                     name="role"
@@ -571,31 +631,108 @@ const Users = () => {
                     onChange={handleInputChange}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   >
-                    <option value="user">User</option>
                     <option value="admin">Admin</option>
+                    <option value="reception">Reception</option>
                   </select>
-                </div>
-                {formErrors.general && (
-                  <p className="mt-2 text-sm text-red-600">
-                    {formErrors.general}
+                  <p className="mt-1 text-xs text-gray-500">
+                    {newUser.role === "admin"
+                      ? "Admins have full access to all system features."
+                      : "Reception staff can manage appointments and basic user information."}
                   </p>
+                </div>
+
+                {formErrors.general && (
+                  <div className="rounded-md bg-red-50 p-3">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <svg
+                          className="h-5 w-5 text-red-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm text-red-700">
+                          {formErrors.general}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 )}
+
                 {formSuccess && (
-                  <p className="mt-2 text-sm text-green-600">{formSuccess}</p>
+                  <div className="rounded-md bg-green-50 p-3">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <svg
+                          className="h-5 w-5 text-green-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm text-green-700">{formSuccess}</p>
+                      </div>
+                    </div>
+                  </div>
                 )}
-                <div className="flex justify-end space-x-4">
+
+                <div className="flex justify-end space-x-4 pt-2">
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    disabled={creatingUser}
+                    className={`inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ${
+                      creatingUser ? "opacity-75 cursor-not-allowed" : ""
+                    }`}
                   >
-                    Create User
+                    {creatingUser ? (
+                      <>
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Creating...
+                      </>
+                    ) : (
+                      "Create Staff Account"
+                    )}
                   </button>
                 </div>
               </form>
@@ -606,29 +743,54 @@ const Users = () => {
 
       {/* Delete User Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md transform transition-all">
             <div className="p-6">
-              <h3 className="text-lg font-medium text-gray-900">Delete User</h3>
-              <p className="mt-2 text-sm text-gray-600">
+              <div className="flex items-center mb-4">
+                <div className="bg-red-100 rounded-full p-2 mr-3">
+                  <svg
+                    className="h-6 w-6 text-red-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900">
+                  Confirm Deletion
+                </h3>
+              </div>
+
+              <p className="text-sm text-gray-600 mb-1">
                 Are you sure you want to delete the user{" "}
                 <span className="font-semibold">{userToDelete?.name}</span>?
-                This action cannot be undone.
               </p>
+              <p className="text-xs text-red-500 mb-4">
+                This action cannot be undone. All user data will be permanently
+                removed.
+              </p>
+
               <div className="mt-6 flex justify-end space-x-4">
                 <button
                   type="button"
                   onClick={() => setShowDeleteModal(false)}
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleDeleteUser}
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150"
                 >
-                  Delete
+                  Delete User
                 </button>
               </div>
             </div>

@@ -73,6 +73,110 @@ const ProductManagement = () => {
     setSelectedProduct(null);
   };
 
+  // Luxury Loading Animation Component
+  const LuxuryLoader = () => {
+    return (
+      <div className="flex justify-center items-center h-96">
+        <div className="relative w-64 h-64">
+          {/* Background radial gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-800 rounded-full opacity-90"></div>
+
+          {/* Outer rotating ring - gold accent */}
+          <div
+            className="absolute inset-0 rounded-full border-4 border-transparent border-t-amber-400 border-r-amber-500 animate-spin"
+            style={{ animationDuration: "3s" }}
+          ></div>
+
+          {/* Middle rotating ring - reverse */}
+          <div
+            className="absolute inset-4 rounded-full border-4 border-transparent border-b-gray-600 border-l-gray-700 animate-spin"
+            style={{ animationDuration: "5s", animationDirection: "reverse" }}
+          ></div>
+
+          {/* Inner rotating ring - gold accent */}
+          <div
+            className="absolute inset-8 rounded-full border-4 border-transparent border-t-amber-300 animate-spin opacity-80"
+            style={{ animationDuration: "2s" }}
+          ></div>
+
+          {/* Center static circle with pulsing effect */}
+          <div
+            className="absolute inset-12 bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center animate-pulse"
+            style={{ animationDuration: "2s" }}
+          >
+            <Package
+              className="text-amber-400 w-12 h-12 animate-bounce"
+              style={{ animationDuration: "2.5s" }}
+            />
+          </div>
+
+          {/* Decorative particles - gold flecks */}
+          <div
+            className="absolute top-0 left-1/4 w-2 h-2 bg-amber-300 rounded-full animate-ping"
+            style={{ animationDuration: "1.5s" }}
+          ></div>
+          <div
+            className="absolute bottom-4 right-8 w-3 h-3 bg-amber-400 rounded-full animate-ping"
+            style={{ animationDuration: "2.7s" }}
+          ></div>
+          <div
+            className="absolute top-12 right-4 w-2 h-2 bg-amber-200 rounded-full animate-ping"
+            style={{ animationDuration: "1.8s" }}
+          ></div>
+          <div
+            className="absolute bottom-12 left-5 w-1 h-1 bg-amber-500 rounded-full animate-ping"
+            style={{ animationDuration: "1.2s" }}
+          ></div>
+
+          {/* Orbiting circle - large */}
+          <div
+            className="absolute top-8 left-8 w-48 h-48 animate-orbit"
+            style={{ animationDuration: "10s" }}
+          >
+            <div className="absolute -left-1 -top-1 w-2 h-2 bg-amber-400 rounded-full shadow-lg shadow-amber-200"></div>
+          </div>
+
+          {/* Orbiting circle - medium */}
+          <div
+            className="absolute top-16 left-16 w-32 h-32 animate-orbit"
+            style={{ animationDuration: "7s", animationDirection: "reverse" }}
+          >
+            <div className="absolute -left-1 -top-1 w-2 h-2 bg-amber-300 rounded-full shadow-lg shadow-amber-200"></div>
+          </div>
+
+          {/* Orbiting circle - small */}
+          <div
+            className="absolute top-24 left-24 w-16 h-16 animate-orbit"
+            style={{ animationDuration: "4s" }}
+          >
+            <div className="absolute -left-1 -top-1 w-2 h-2 bg-amber-200 rounded-full shadow-lg shadow-amber-100"></div>
+          </div>
+        </div>
+
+        {/* Text below the loader */}
+        <div className="absolute mt-64 text-center">
+          <p className="text-gray-300 font-medium tracking-wider animate-pulse">
+            LOADING PRODUCTS
+          </p>
+          <div className="flex justify-center space-x-2 mt-2">
+            <div
+              className="w-2 h-2 bg-amber-400 rounded-full animate-bounce"
+              style={{ animationDelay: "0s" }}
+            ></div>
+            <div
+              className="w-2 h-2 bg-amber-400 rounded-full animate-bounce"
+              style={{ animationDelay: "0.2s" }}
+            ></div>
+            <div
+              className="w-2 h-2 bg-amber-400 rounded-full animate-bounce"
+              style={{ animationDelay: "0.4s" }}
+            ></div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Render add product mode
   if (isAddMode) {
     return (
@@ -116,9 +220,7 @@ const ProductManagement = () => {
 
       {/* Products Grid */}
       {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500"></div>
-        </div>
+        <LuxuryLoader />
       ) : products.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <Image className="mx-auto mb-4 text-gray-400" size={48} />
@@ -197,5 +299,12 @@ const ProductManagement = () => {
     </div>
   );
 };
+
+// Add custom animation keyframe for orbiting effect
+// You'll need to add this to your global CSS or use a CSS-in-JS solution
+// @keyframes orbit {
+//   0% { transform: rotate(0deg) translateX(0) rotate(0deg); }
+//   100% { transform: rotate(360deg) translateX(0) rotate(-360deg); }
+// }
 
 export default ProductManagement;
