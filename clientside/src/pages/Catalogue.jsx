@@ -508,9 +508,7 @@ const ProductCard = ({ item, navigate }) => {
           {item.description}
         </p>
         <div className="flex items-center justify-between">
-          <div className="text-indigo-600 font-bold">
-            ${item.price ? item.price.toFixed(2) : "TBD"}
-          </div>
+          <div className="text-indigo-600 font-bold">Price on request</div>
           <div className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
             {item.category}
           </div>
@@ -572,7 +570,7 @@ const FeaturedProductCard = ({ item, navigate }) => {
         </p>
         <div className="flex items-center justify-between">
           <div className="text-indigo-700 font-bold text-lg">
-            ${item.price ? item.price.toFixed(2) : "TBD"}
+            Price on request
           </div>
           <div className="text-xs px-3 py-1 bg-indigo-100 rounded-full text-indigo-700 font-medium">
             {item.category}

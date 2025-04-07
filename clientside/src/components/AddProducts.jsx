@@ -127,7 +127,7 @@ const AddProducts = () => {
       setLoadingStage(2);
 
       const res = await axios.post(
-        "https://bluescope-eotl.vercel.app/products/create-new/",
+        "https://bluescope-eotl.vercel.app/products/create-new",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

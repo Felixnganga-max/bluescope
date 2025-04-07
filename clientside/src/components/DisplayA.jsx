@@ -178,9 +178,7 @@ const DisplayA = () => {
                 <div className="font-bold text-gray-900 flex items-end">
                   {item.price ? (
                     <>
-                      <span className="text-sm">
-                        KSh {item.price.toLocaleString()}
-                      </span>
+                      <span className="text-sm">Price on request</span>
                     </>
                   ) : (
                     "Price on request"
