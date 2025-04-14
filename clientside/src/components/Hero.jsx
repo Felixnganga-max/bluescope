@@ -396,7 +396,7 @@ export default function Hero() {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              PrintMaster
+              BlueScope
             </motion.div>
           </motion.div>
         )}
@@ -567,7 +567,7 @@ export default function Hero() {
             <div className="flex items-center justify-between h-16">
               <div className="flex-shrink-0 flex items-center">
                 <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 to-yellow-300">
-                  PrintMaster
+                  BlueScope
                 </span>
               </div>
 
