@@ -380,7 +380,7 @@ export default function Hero() {
   };
 
   return (
-    <div className="bg-gradient-to-br mt-20 from-blue-900 to-blue-950 min-h-screen overflow-hidden">
+    <div className="bg-gradient-to-br md:mt-2 mt-20 from-blue-900 to-blue-950 min-h-screen overflow-hidden">
       {/* Preloader Animation - Shows only on initial load */}
       <AnimatePresence>
         {!isLoaded && (
