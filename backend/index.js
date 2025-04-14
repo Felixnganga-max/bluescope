@@ -10,7 +10,11 @@ const PORT = process.env.PORT || 3000;
 // ✅ Proper CORS Configuration
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://bluescope-tau.vercel.app"], // Allow frontend requests
+    origin: [
+      "http://localhost:5173",
+      "https://bluescope-tau.vercel.app",
+      "https://www.bluescopeafrica.com",
+    ], // Allow frontend requests
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Allow cookies if using authentication
