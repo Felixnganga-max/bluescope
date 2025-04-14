@@ -243,7 +243,7 @@ export default function Hero() {
     {
       id: 1,
       name: "Business Cards",
-      image: assets.businessCard,
+      image: assets.business,
       link: "promotional-items/business-cards",
     },
     {

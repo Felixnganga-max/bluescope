@@ -32,6 +32,8 @@ import mockup from "../assets/images/mockup.jpeg";
 import catholic from "../assets/images/catholic.jpg";
 import lg from "../assets/images/lg.png";
 import centonomy from "../assets/images/centonomy.png";
+import tshirt from "../assets/images/t-shirt.jpeg";
+import business from "../assets/images/business.jpeg";
 
 export const printItems = [
   {
@@ -132,6 +134,8 @@ const images = {
   displayBanner,
   gift,
   mockup,
+  business,
+  tshirt,
 };
 
 export default images;
