@@ -32,7 +32,7 @@ import mockup from "../assets/images/mockup.jpeg";
 import catholic from "../assets/images/catholic.jpg";
 import lg from "../assets/images/lg.png";
 import centonomy from "../assets/images/centonomy.png";
-import tshirt from "../assets/images/t-shirt.jpeg";
+import tshirt from "../assets/images/tshirt.jpeg";
 import business from "../assets/images/business.jpeg";
 
 export const printItems = [
