@@ -42,7 +42,7 @@ const Users = () => {
         }
 
         const response = await axios.get(
-          "http://localhost:3000/bluescope/auth/current-user",
+          "https://bluescope-k9yt.vercel.app/bluescope/auth/current-user",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -84,7 +84,7 @@ const Users = () => {
       setLoading(true);
 
       const response = await axios.get(
-        "http://localhost:3000/bluescope/auth/all-users",
+        "https://bluescope-k9yt.vercel.app/bluescope/auth/all-users",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -163,7 +163,7 @@ const Users = () => {
 
       // Use the sign-up endpoint as specified
       const response = await axios.post(
-        "http://localhost:3000/bluescope/auth/sign-up",
+        "https://bluescope-k9yt.vercel.app/bluescope/auth/sign-up",
         newUser,
         {
           headers: {
@@ -222,7 +222,7 @@ const Users = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.delete(
-        `http://localhost:3000/bluescope/auth/users/${userToDelete._id}`,
+        `https://bluescope-k9yt.vercel.app/bluescope/auth/users/${userToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

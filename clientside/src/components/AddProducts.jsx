@@ -463,7 +463,7 @@ const AddProducts = () => {
 
       <div className="max-w-4xl mx-auto bg-gradient-to-b from-[#0a192f] to-[#112240] rounded-lg shadow-2xl p-6 border border-amber-500/20">
         <div className="text-center mb-8">
-          <div className="inline-block bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-400 text-transparent bg-clip-text">
+          <div className="inline-block bg-gradient-to-r from-useramber-300 via-yellow-400 to-amber-400 text-transparent bg-clip-text">
             <h2 className="text-3xl font-bold">Add Product</h2>
           </div>
           <p className="text-gray-300 mt-2">
