@@ -129,9 +129,9 @@ const Icons = {
       />
       <defs>
         <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#f87171" />
-          <stop offset="50%" stopColor="#3b82f6" />
-          <stop offset="100%" stopColor="#9ca3af" />
+          <stop offset="0%" stopColor="#c8a951" />
+          <stop offset="50%" stopColor="#f0d082" />
+          <stop offset="100%" stopColor="#d4af37" />
         </linearGradient>
       </defs>
     </svg>
@@ -336,43 +336,43 @@ const Sidebar = () => {
       path: "/admin/product-management",
       label: "Product Management",
       icon: <Icons.ProductIcon />,
-      color: "from-red-400 to-red-600",
+      color: "from-amber-400 to-yellow-600",
     },
     {
       path: "#",
       label: "Sales Management",
       icon: <Icons.SalesIcon />,
-      color: "from-blue-400 to-blue-600",
+      color: "from-amber-300 to-yellow-500",
     },
     {
       path: "#",
       label: "Inventory Management",
       icon: <Icons.InventoryIcon />,
-      color: "from-gray-400 to-gray-600",
+      color: "from-amber-400 to-yellow-600",
     },
     {
       path: "/admin/users",
       label: "Users",
       icon: <Icons.UsersIcon />,
-      color: "from-red-400 to-red-600",
+      color: "from-amber-300 to-yellow-500",
     },
     {
       path: "#",
       label: "User Interface",
       icon: <Icons.UIIcon />,
-      color: "from-purple-400 to-purple-600",
+      color: "from-amber-400 to-yellow-600",
     },
     {
       path: "/admin/settings",
       label: "Settings",
       icon: <Icons.SettingsIcon />,
-      color: "from-blue-400 to-blue-600",
+      color: "from-amber-300 to-yellow-500",
     },
     {
       path: "#",
       label: "Profile",
       icon: <Icons.ProfileIcon />,
-      color: "from-gray-400 to-gray-600",
+      color: "from-amber-400 to-yellow-600",
     },
   ];
 
@@ -388,12 +388,12 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`relative min-h-screen transition-all duration-300 ease-in-out ${
+      className={`fixed top-0 left-0 h-screen transition-all duration-300 ease-in-out ${
         collapsed ? "w-20" : "w-64"
-      } shadow-2xl overflow-hidden`}
+      } shadow-2xl overflow-hidden z-50`}
       style={{
         background:
-          "linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%)",
+          "linear-gradient(135deg, #0a1929 0%, #112240 50%, #0a192f 100%)",
         backgroundSize: "200% 200%",
         animation: "gradientAnimation 15s ease infinite",
       }}
@@ -423,6 +423,19 @@ const Sidebar = () => {
             transform: scale(1);
           }
         }
+
+        @keyframes glowAnimation {
+          0% {
+            box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
+          }
+          50% {
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5),
+              0 0 30px rgba(212, 175, 55, 0.3);
+          }
+          100% {
+            box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
+          }
+        }
       `}</style>
 
       {/* Collapse button - only show on larger screens */}
@@ -432,10 +445,11 @@ const Sidebar = () => {
             console.log("🔄 Toggling sidebar collapse state");
             setCollapsed(!collapsed);
           }}
-          className="absolute -right-3 top-32 bg-gradient-to-r from-red-500 to-blue-500 rounded-full p-1 shadow-lg hover:from-red-600 hover:to-blue-600 transition-all z-50"
+          className="absolute -right-3 top-32 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full p-1 shadow-lg hover:from-amber-600 hover:to-yellow-600 transition-all z-50"
           style={{
             boxShadow:
-              "0 0 10px rgba(219, 39, 119, 0.5), 0 0 20px rgba(59, 130, 246, 0.3)",
+              "0 0 10px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.3)",
+            animation: "glowAnimation 3s infinite ease-in-out",
           }}
         >
           <Icons.CollapseIcon collapsed={collapsed} />
@@ -443,12 +457,12 @@ const Sidebar = () => {
       )}
 
       {/* User section at the top */}
-      <div className="backdrop-blur-sm bg-white/5 p-4 border-b border-gray-800/50">
+      <div className="backdrop-blur-sm bg-white/5 p-4 border-b border-amber-900/30">
         {!collapsed ? (
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="p-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500">
-                <div className="bg-slate-800 p-1 rounded-full">
+              <div className="p-1 rounded-full bg-gradient-to-r from-amber-400 to-yellow-600">
+                <div className="bg-slate-900 p-1 rounded-full">
                   <Icons.AvatarIcon />
                 </div>
               </div>
@@ -456,7 +470,7 @@ const Sidebar = () => {
                 <p className="text-lg font-medium text-white">
                   {userData.name}
                 </p>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-amber-300">
                   {userData.role.charAt(0).toUpperCase() +
                     userData.role.slice(1)}
                 </p>
@@ -464,7 +478,7 @@ const Sidebar = () => {
             </div>
             <button
               onClick={handleLogout}
-              className="p-2 rounded-lg hover:bg-gray-800/50 text-gray-400 hover:text-white transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-800/50 text-amber-300 hover:text-amber-500 transition-colors"
               title="Logout"
             >
               <Icons.LogoutIcon />
@@ -472,14 +486,14 @@ const Sidebar = () => {
           </div>
         ) : (
           <div className="flex flex-col items-center">
-            <div className="p-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 mb-2">
-              <div className="bg-slate-800 p-1 rounded-full">
+            <div className="p-1 rounded-full bg-gradient-to-r from-amber-400 to-yellow-600 mb-2">
+              <div className="bg-slate-900 p-1 rounded-full">
                 <Icons.AvatarIcon />
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="p-1 rounded-lg hover:bg-gray-800/50 text-gray-400 hover:text-white transition-colors"
+              className="p-1 rounded-lg hover:bg-gray-800/50 text-amber-300 hover:text-amber-500 transition-colors"
               title="Logout"
             >
               <Icons.LogoutIcon />
@@ -504,22 +518,26 @@ const Sidebar = () => {
             style={{ animation: "pulseAnimation 3s infinite ease-in-out" }}
           >
             <Icons.LogoIcon />
-            <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-blue-500/20 rounded-full blur-xl -z-10"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-yellow-500/20 rounded-full blur-xl -z-10"></div>
           </div>
 
           {!collapsed && (
             <div className="ml-3">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-red-300 via-blue-300 to-gray-300 text-transparent bg-clip-text tracking-tight">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-400 text-transparent bg-clip-text tracking-tight">
                 ADMIN PORTAL
               </h2>
-              <p className="text-xs text-gray-400">Enterprise Dashboard</p>
+              <p className="text-xs text-amber-400/80">Enterprise Dashboard</p>
             </div>
           )}
         </div>
       </div>
 
       {/* Navigation */}
-      <div className={`px-3 ${collapsed ? "px-2" : "px-4"}`}>
+      <div
+        className={`px-3 ${
+          collapsed ? "px-2" : "px-4"
+        } overflow-y-auto h-full pb-20`}
+      >
         <ul className="space-y-2">
           {menuItems.map((item, index) => (
             <li key={item.path} style={{ animationDelay: `${index * 0.1}s` }}>
@@ -527,8 +545,8 @@ const Sidebar = () => {
                 to={item.path}
                 className={`flex items-center rounded-xl transition-all duration-300 overflow-hidden group ${
                   isActive(item.path)
-                    ? "bg-gradient-to-r from-gray-800/90 to-gray-900/90 text-white shadow-lg border-l-4 border-l-red-500"
-                    : "hover:bg-gray-800/40 text-gray-300"
+                    ? "bg-gradient-to-r from-slate-800/90 to-slate-900/90 text-white shadow-lg border-l-4 border-l-amber-500"
+                    : "hover:bg-slate-800/40 text-gray-300"
                 } ${collapsed ? "justify-center p-3" : "p-3"}`}
                 onClick={() => {
                   console.log(
@@ -540,7 +558,7 @@ const Sidebar = () => {
                   className={`relative flex-shrink-0 p-1 rounded-lg ${
                     isActive(item.path)
                       ? `bg-gradient-to-br ${item.color} shadow-md`
-                      : "bg-gray-800/30 group-hover:bg-gradient-to-br group-hover:from-gray-700 group-hover:to-gray-800"
+                      : "bg-slate-800/30 group-hover:bg-gradient-to-br group-hover:from-amber-700/30 group-hover:to-amber-800/30"
                   }`}
                 >
                   {item.icon}
@@ -551,24 +569,24 @@ const Sidebar = () => {
                     <span
                       className={`font-medium transition-all ${
                         isActive(item.path)
-                          ? "text-gray-100"
-                          : "text-gray-300 group-hover:text-white"
+                          ? "text-amber-200"
+                          : "text-gray-300 group-hover:text-amber-200"
                       }`}
                     >
                       {item.label}
                     </span>
 
                     {isActive(item.path) && (
-                      <div className="w-full h-0.5 mt-1 bg-gradient-to-r from-red-500 via-blue-500 to-gray-500 rounded-full"></div>
+                      <div className="w-full h-0.5 mt-1 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-300 rounded-full"></div>
                     )}
                   </div>
                 )}
 
                 {/* Show tooltip on hover when collapsed */}
                 {collapsed && (
-                  <div className="absolute left-full ml-6 px-3 py-1 bg-gray-900 text-white text-sm rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none shadow-lg">
+                  <div className="absolute left-full ml-6 px-3 py-1 bg-slate-900 text-amber-200 text-sm rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none shadow-lg border border-amber-700/30">
                     {item.label}
-                    <div className="absolute w-2 h-2 bg-gray-900 transform rotate-45 -left-1 top-1/2 -translate-y-1/2"></div>
+                    <div className="absolute w-2 h-2 bg-slate-900 transform rotate-45 -left-1 top-1/2 -translate-y-1/2 border-l border-t border-amber-700/30"></div>
                   </div>
                 )}
               </Link>
@@ -586,14 +604,14 @@ const Sidebar = () => {
         {!collapsed ? (
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center">
-              <div className="h-2 w-2 rounded-full bg-green-500 mr-2 animate-pulse"></div>
-              <span className="text-gray-400">Online</span>
+              <div className="h-2 w-2 rounded-full bg-amber-400 mr-2 animate-pulse"></div>
+              <span className="text-amber-300">Online</span>
             </div>
-            <span className="text-gray-500">v3.5.2</span>
+            <span className="text-amber-500/70">v3.5.2</span>
           </div>
         ) : (
           <div className="flex justify-center">
-            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+            <div className="h-2 w-2 rounded-full bg-amber-400 animate-pulse"></div>
           </div>
         )}
       </div>

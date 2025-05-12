@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { ChevronRight, ChevronDown, Edit, ArrowUp } from "lucide-react";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -15,6 +16,8 @@ const ProductDetails = () => {
   ]);
   const [showNumbersEditor, setShowNumbersEditor] = useState(false);
   const [tempNumbers, setTempNumbers] = useState([...whatsappNumbers]);
+  const [showTextFormatting, setShowTextFormatting] = useState(false);
+  const descriptionRef = useRef(null);
   const productRef = useRef(null);
   const topRef = useRef(null);
 
@@ -74,13 +77,99 @@ const ProductDetails = () => {
     setTempNumbers(newNumbers);
   };
 
+  const insertFormatting = (tag) => {
+    if (!descriptionRef.current) return;
+
+    const textarea = descriptionRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+
+    let formattedText = "";
+    switch (tag) {
+      case "h1":
+        formattedText = `<h1>${selectedText}</h1>`;
+        break;
+      case "h2":
+        formattedText = `<h2>${selectedText}</h2>`;
+        break;
+      case "strong":
+        formattedText = `<strong>${selectedText}</strong>`;
+        break;
+      default:
+        formattedText = selectedText;
+    }
+
+    const newText =
+      textarea.value.substring(0, start) +
+      formattedText +
+      textarea.value.substring(end);
+
+    // Update the product description
+    const updatedProduct = { ...selectedProduct };
+    updatedProduct.description = newText;
+    setSelectedProduct(updatedProduct);
+
+    // This is just for demonstration - in a real app, you'd save this change
+    setTimeout(() => {
+      textarea.focus();
+      textarea.selectionStart = start + formattedText.length;
+      textarea.selectionEnd = start + formattedText.length;
+    }, 0);
+  };
+
+  // Function to parse formatted text for rendering
+  const renderFormattedText = (text) => {
+    if (!text) return null;
+
+    // Replace HTML tags with JSX elements
+    let formattedContent = text;
+
+    // Replace h1 tags
+    formattedContent = formattedContent.replace(
+      /<h1>(.*?)<\/h1>/g,
+      (match, content) =>
+        `<div class="text-2xl font-bold text-blue-100 my-4">${content}</div>`
+    );
+
+    // Replace h2 tags
+    formattedContent = formattedContent.replace(
+      /<h2>(.*?)<\/h2>/g,
+      (match, content) =>
+        `<div class="text-xl font-semibold text-blue-200 my-3">${content}</div>`
+    );
+
+    // Replace strong tags
+    formattedContent = formattedContent.replace(
+      /<strong>(.*?)<\/strong>/g,
+      (match, content) =>
+        `<span class="font-bold text-gold-300">${content}</span>`
+    );
+
+    // Replace paragraph markers with bullet points
+    formattedContent = formattedContent.replace(
+      /(?<!<\/div>|<\/span>|>)([^<>\n]+)(?!\n|<)/g,
+      (match, content) => {
+        if (content.trim()) {
+          return `<div class="flex items-start my-2">
+                    <span class="text-gold-400 mr-2 mt-1">●</span>
+                    <span>${content.trim()}</span>
+                  </div>`;
+        }
+        return match;
+      }
+    );
+
+    return <div dangerouslySetInnerHTML={{ __html: formattedContent }} />;
+  };
+
   // Loading animation
   if (!selectedProduct) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-900">
+      <div className="flex items-center justify-center h-screen bg-gradient-to-b from-blue-950 to-blue-900">
         <div className="flex flex-col items-center">
-          <div className="w-24 h-24 border-t-4 border-b-4 border-blue-400 rounded-full animate-spin"></div>
-          <p className="mt-4 text-blue-400 text-xl font-light">
+          <div className="w-24 h-24 border-t-4 border-b-4 border-gold-400 rounded-full animate-spin"></div>
+          <p className="mt-4 text-gold-400 text-xl font-light">
             Loading amazing products...
           </p>
         </div>
@@ -112,7 +201,7 @@ const ProductDetails = () => {
   return (
     <div
       ref={topRef}
-      className="bg-gray-900 mt-16 min-h-screen py-12 px-4 sm:px-6 text-gray-100"
+      className="bg-gradient-to-b from-blue-950 to-blue-900 mt-16 min-h-screen py-12 px-4 sm:px-6 text-gray-100"
     >
       {/* Animated Hero Section */}
       <motion.div
@@ -122,7 +211,7 @@ const ProductDetails = () => {
         className="w-full max-w-6xl mx-auto mb-12"
       >
         <div className="relative rounded-2xl overflow-hidden h-64 md:h-96">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-gray-900 opacity-70"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-950 to-blue-900 opacity-70"></div>
           <img
             src={mainImage}
             alt="Hero banner"
@@ -142,7 +231,7 @@ const ProductDetails = () => {
                 initial={{ width: 0 }}
                 animate={{ width: "200px" }}
                 transition={{ delay: 0.6, duration: 0.8 }}
-                className="h-1 bg-blue-400 mx-auto"
+                className="h-1 bg-gradient-to-r from-blue-400 to-gold-400 mx-auto"
               ></motion.div>
             </div>
           </div>
@@ -155,7 +244,7 @@ const ProductDetails = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="max-w-6xl mx-auto bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-700"
+        className="max-w-6xl mx-auto bg-blue-950/90 rounded-xl shadow-2xl overflow-hidden border border-blue-800"
       >
         <div className="flex flex-col md:flex-row">
           {/* Left Section - Images */}
@@ -164,8 +253,8 @@ const ProductDetails = () => {
             className="w-full md:w-1/2 relative p-6"
           >
             {/* Main Image Container with Glowing Border */}
-            <div className="p-1 border-4 border-blue-500 rounded-lg shadow-lg overflow-hidden relative">
-              <div className="absolute inset-0 bg-blue-500 opacity-20 animate-pulse"></div>
+            <div className="p-1 border-4 border-gold-500 rounded-lg shadow-lg overflow-hidden relative">
+              <div className="absolute inset-0 bg-gold-500 opacity-10 animate-pulse"></div>
               <motion.img
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.3 }}
@@ -187,8 +276,8 @@ const ProductDetails = () => {
                   whileTap={{ scale: 0.95 }}
                   className={`p-1 rounded-md transition-all duration-300 ${
                     mainImage === img
-                      ? "border-2 border-blue-400 shadow-lg shadow-blue-400/30"
-                      : "border-2 border-gray-700"
+                      ? "border-2 border-gold-400 shadow-lg shadow-gold-400/30"
+                      : "border-2 border-blue-800"
                   }`}
                 >
                   <img
@@ -205,14 +294,14 @@ const ProductDetails = () => {
           {/* Right Section - Product Details */}
           <motion.div
             variants={itemVariants}
-            className="w-full md:w-1/2 p-8 bg-gray-800 border-l border-gray-700"
+            className="w-full md:w-1/2 p-8 bg-blue-950/50 border-l border-blue-800"
           >
-            {/* Blue Line Decoration */}
+            {/* Gold-Blue Line Decoration */}
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: "4rem" }}
               transition={{ duration: 0.8 }}
-              className="h-1 bg-blue-500 mb-6"
+              className="h-1 bg-gradient-to-r from-gold-500 to-blue-500 mb-6"
             ></motion.div>
 
             <motion.h1
@@ -222,30 +311,92 @@ const ProductDetails = () => {
               {selectedProduct.name}
             </motion.h1>
 
-            {/* Elegant Description Box */}
+            {/* Elegant Description Box with Formatting */}
             <motion.div
               variants={itemVariants}
-              className="bg-gray-900 p-6 rounded-lg shadow-inner border border-gray-700 mt-6 mb-6"
+              className="bg-blue-950 p-6 rounded-lg shadow-inner border border-blue-800 mt-6 mb-6"
             >
-              <p className="text-gray-300 leading-relaxed">
-                {selectedProduct.description}
-              </p>
+              {/* Formatting options button for admin/edit mode - commented out for the client view */}
+              {/* 
+              <div className="mb-3">
+                <button
+                  type="button"
+                  onClick={() => setShowTextFormatting(!showTextFormatting)}
+                  className="flex items-center text-sm font-medium text-blue-400 hover:text-blue-300"
+                >
+                  {showTextFormatting ? (
+                    <ChevronDown size={16} />
+                  ) : (
+                    <ChevronRight size={16} />
+                  )}
+                  <span className="ml-1">Formatting Options</span>
+                </button>
+                {showTextFormatting && (
+                  <div className="mt-2 p-3 bg-blue-900 rounded-md shadow-sm border border-blue-700">
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => insertFormatting("h1")}
+                        className="px-3 py-1 text-xs bg-blue-800 hover:bg-blue-700 rounded border border-blue-600 text-blue-100"
+                      >
+                        First Heading (H1)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => insertFormatting("h2")}
+                        className="px-3 py-1 text-xs bg-blue-800 hover:bg-blue-700 rounded border border-blue-600 text-blue-100"
+                      >
+                        Second Heading (H2)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => insertFormatting("strong")}
+                        className="px-3 py-1 text-xs bg-blue-800 hover:bg-blue-700 rounded border border-blue-600 text-blue-100 font-bold"
+                      >
+                        Bold Text
+                      </button>
+                    </div>
+                    <p className="mt-2 text-xs text-blue-300">
+                      Select text and click a formatting option, or use tags
+                      directly: &lt;h1&gt;, &lt;h2&gt;, &lt;strong&gt;
+                    </p>
+                  </div>
+                )}
+              </div>
+              <textarea
+                ref={descriptionRef}
+                value={selectedProduct.description}
+                onChange={(e) => {
+                  const updatedProduct = {...selectedProduct};
+                  updatedProduct.description = e.target.value;
+                  setSelectedProduct(updatedProduct);
+                }}
+                placeholder="Enter product description"
+                rows="6"
+                className="w-full p-3 border border-blue-700 bg-blue-900/50 rounded-lg focus:ring-2 focus:ring-gold-400 focus:border-gold-400 transition-all text-blue-100"
+              ></textarea>
+              */}
+
+              {/* Render the formatted description */}
+              <div className="text-blue-100 leading-relaxed">
+                {renderFormattedText(selectedProduct.description)}
+              </div>
             </motion.div>
 
-            {/* Specifications with Elegant Blue Accents */}
+            {/* Specifications with Elegant Gold/Blue Accents */}
             <motion.div variants={containerVariants} className="space-y-4 mt-8">
               <motion.div variants={itemVariants} className="flex items-center">
-                <span className="text-blue-400 mr-2">●</span>
-                <p className="text-gray-300">
-                  <span className="font-semibold text-blue-200">Category:</span>{" "}
+                <span className="text-gold-400 mr-2">●</span>
+                <p className="text-blue-100">
+                  <span className="font-semibold text-gold-300">Category:</span>{" "}
                   {selectedProduct.category}
                 </p>
               </motion.div>
 
               <motion.div variants={itemVariants} className="flex items-center">
-                <span className="text-blue-400 mr-2">●</span>
-                <p className="text-gray-300">
-                  <span className="font-semibold text-blue-200">
+                <span className="text-gold-400 mr-2">●</span>
+                <p className="text-blue-100">
+                  <span className="font-semibold text-gold-300">
                     Dimensions:
                   </span>{" "}
                   {selectedProduct.dimensions || "Standard size"}
@@ -253,9 +404,9 @@ const ProductDetails = () => {
               </motion.div>
 
               <motion.div variants={itemVariants} className="flex items-center">
-                <span className="text-blue-400 mr-2">●</span>
-                <p className="text-gray-300">
-                  <span className="font-semibold text-blue-200">Material:</span>{" "}
+                <span className="text-gold-400 mr-2">●</span>
+                <p className="text-blue-100">
+                  <span className="font-semibold text-gold-300">Material:</span>{" "}
                   {selectedProduct.material || "High-quality composite"}
                 </p>
               </motion.div>
@@ -263,7 +414,7 @@ const ProductDetails = () => {
 
             {/* WhatsApp Quote Request Section */}
             <motion.div variants={itemVariants} className="mt-10 space-y-4">
-              <h3 className="text-xl font-semibold text-blue-200 mb-4">
+              <h3 className="text-xl font-semibold text-gold-300 mb-4">
                 Request Quote on WhatsApp
               </h3>
 
@@ -293,9 +444,9 @@ const ProductDetails = () => {
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-6 bg-gray-900 p-4 rounded-lg border border-gray-700"
+                    className="mt-6 bg-blue-950 p-4 rounded-lg border border-blue-800"
                   >
-                    <h4 className="text-lg font-medium text-blue-200 mb-3">
+                    <h4 className="text-lg font-medium text-gold-300 mb-3">
                       Edit WhatsApp Numbers
                     </h4>
                     {tempNumbers.map((number, index) => (
@@ -306,7 +457,7 @@ const ProductDetails = () => {
                           onChange={(e) =>
                             handleNumberChange(index, e.target.value)
                           }
-                          className="flex-grow px-4 py-2 bg-gray-800 border border-gray-600 rounded-l-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="flex-grow px-4 py-2 bg-blue-900 border border-blue-700 rounded-lg text-blue-100 focus:outline-none focus:ring-2 focus:ring-gold-400"
                           placeholder={`WhatsApp number ${index + 1}`}
                         />
                       </div>
@@ -314,13 +465,13 @@ const ProductDetails = () => {
                     <div className="flex justify-end space-x-2 mt-4">
                       <button
                         onClick={() => setShowNumbersEditor(false)}
-                        className="px-4 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600"
+                        className="px-4 py-2 bg-blue-800 text-blue-100 rounded-lg hover:bg-blue-700"
                       >
                         Cancel
                       </button>
                       <button
                         onClick={saveWhatsappNumbers}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500"
+                        className="px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-600 text-blue-900 font-medium rounded-lg hover:from-gold-400 hover:to-gold-500"
                       >
                         Save Numbers
                       </button>
@@ -331,21 +482,9 @@ const ProductDetails = () => {
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                     onClick={() => setShowNumbersEditor(true)}
-                    className="text-blue-400 mt-2 flex items-center hover:text-blue-300"
+                    className="text-gold-400 mt-2 flex items-center hover:text-gold-300"
                   >
-                    <svg
-                      className="w-4 h-4 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                      />
-                    </svg>
+                    <Edit className="w-4 h-4 mr-1" />
                     Edit WhatsApp Numbers
                   </motion.button>
                 )}
@@ -363,9 +502,9 @@ const ProductDetails = () => {
         className="mt-24 max-w-6xl mx-auto"
       >
         <div className="flex items-center justify-center mb-12">
-          <div className="h-0.5 bg-blue-500 w-12 mr-4"></div>
-          <h2 className="text-2xl font-bold text-blue-200">Related Products</h2>
-          <div className="h-0.5 bg-blue-500 w-12 ml-4"></div>
+          <div className="h-0.5 bg-gradient-to-r from-gold-500 to-blue-500 w-12 mr-4"></div>
+          <h2 className="text-2xl font-bold text-gold-300">Related Products</h2>
+          <div className="h-0.5 bg-gradient-to-l from-gold-500 to-blue-500 w-12 ml-4"></div>
         </div>
 
         <motion.div
@@ -397,7 +536,7 @@ const ProductDetails = () => {
                   }
                 }}
               >
-                <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg border border-gray-700 h-full">
+                <div className="bg-blue-950 rounded-lg overflow-hidden shadow-lg border border-blue-800 h-full">
                   <div className="relative">
                     <div className="overflow-hidden">
                       <img
@@ -406,13 +545,13 @@ const ProductDetails = () => {
                         className="w-full h-48 object-cover transform transition-transform duration-500 group-hover:scale-110"
                       />
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-40 group-hover:opacity-20 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-blue-950 to-transparent opacity-40 group-hover:opacity-20 transition-opacity duration-300"></div>
                   </div>
                   <div className="p-4">
-                    <h3 className="text-blue-100 font-medium text-sm truncate">
+                    <h3 className="text-gold-200 font-medium text-sm truncate">
                       {product.name}
                     </h3>
-                    <div className="w-8 h-0.5 bg-blue-500 mt-2 transform origin-left transition-all duration-300 group-hover:w-full"></div>
+                    <div className="w-8 h-0.5 bg-gradient-to-r from-gold-500 to-blue-500 mt-2 transform origin-left transition-all duration-300 group-hover:w-full"></div>
                   </div>
                 </div>
               </motion.div>
@@ -430,24 +569,13 @@ const ProductDetails = () => {
           <motion.button
             whileHover={{
               scale: 1.05,
-              boxShadow: "0 0 15px rgba(59, 130, 246, 0.5)",
+              boxShadow: "0 0 15px rgba(234, 179, 8, 0.5)",
             }}
             whileTap={{ scale: 0.95 }}
-            className="bg-blue-600 text-white px-8 py-3 rounded-lg shadow-lg transition-all duration-300 inline-flex items-center"
+            className="bg-gradient-to-r from-gold-600 to-gold-500 text-blue-950 px-8 py-3 rounded-lg shadow-lg transition-all duration-300 inline-flex items-center font-medium"
           >
             <span>Explore All Products</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 ml-2"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <ChevronRight className="ml-2" size={18} />
           </motion.button>
         </motion.div>
       </motion.div>
@@ -463,21 +591,9 @@ const ProductDetails = () => {
             topRef.current.scrollIntoView({ behavior: "smooth" });
           }
         }}
-        className="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-500 z-50"
+        className="fixed bottom-8 right-8 bg-gradient-to-r from-gold-500 to-gold-600 text-blue-950 p-3 rounded-full shadow-lg hover:from-gold-400 hover:to-gold-500 z-50"
       >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M5 10l7-7m0 0l7 7m-7-7v18"
-          />
-        </svg>
+        <ArrowUp className="w-6 h-6" />
       </motion.button>
     </div>
   );
